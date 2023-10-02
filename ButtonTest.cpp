@@ -5,9 +5,6 @@
 
 #include "Button.h"
 #include "Button.h" // Double-inclusion test
-
-#define DOCTEST_CONFIG_IMPLEMENT
-
 #include "doctest.h"
 
 TEST_CASE("Button Constructors")

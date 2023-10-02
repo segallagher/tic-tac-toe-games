@@ -17,10 +17,10 @@ public:
 	Button(olc::v2d_generic<int> position, olc::Decal& buttonDecal, std::function<void()> lambdaCallback);
 	~Button();
 
-	void drawSelf(olc::PixelGameEngine& gfx);
+	virtual void drawSelf(olc::PixelGameEngine& gfx);
 	void setCallback(std::function<void()> lambdaCallback);
 	std::function<void()>  getCallback();
-	bool isPressed(olc::v2d_generic<int> mousePosition);
+	virtual bool isPressed(olc::v2d_generic<int> mousePosition);
 	bool isPositionWithin(olc::v2d_generic<int> position);
 
 	void setActive(bool isActive);
@@ -39,7 +39,8 @@ public:
 	void centerHorizontally(olc::v2d_generic<int> screenSize);
 	void centerVertically(int screenHeight);
 	void centerVertically(olc::v2d_generic<int> screenSize);
-private:
+
+protected:
 	olc::Decal* _buttonDecal = nullptr;
 	olc::v2d_generic<int> _position;
 	olc::v2d_generic<int> _dimensions;

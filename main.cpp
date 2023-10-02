@@ -6,6 +6,8 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 #include "Button.h"
+
+#define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
 
 class TicTacToeGame : public olc::PixelGameEngine
