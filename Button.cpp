@@ -48,6 +48,10 @@ void Button::setCallback(std::function<void()> lambdaCallback)
 {
 	_callback = lambdaCallback;
 }
+std::function<void()> Button::getCallback()
+{
+	return _callback;
+}
 bool Button::isPressed(olc::v2d_generic<int> mousePosition)
 {
 	if (isActive() && isPositionWithin(mousePosition))

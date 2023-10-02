@@ -19,6 +19,7 @@ public:
 
 	void drawSelf(olc::PixelGameEngine& gfx);
 	void setCallback(std::function<void()> lambdaCallback);
+	std::function<void()>  getCallback();
 	bool isPressed(olc::v2d_generic<int> mousePosition);
 	bool isPositionWithin(olc::v2d_generic<int> position);
 

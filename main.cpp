@@ -6,6 +6,7 @@
 #define OLC_PGE_APPLICATION
 #include "olcPixelGameEngine.h"
 #include "Button.h"
+#include "doctest.h"
 
 class TicTacToeGame : public olc::PixelGameEngine
 {
@@ -70,7 +71,7 @@ public:
 	}
 	void drawButtons()
 	{
-		for (auto button : _buttons)
+		for (auto &button : _buttons)
 		{
 			if (button.isActive())
 				button.drawSelf(*this);
@@ -79,7 +80,7 @@ public:
 	void checkButtons()
 	{
 		if (GetMouse(0).bReleased)
-			for (auto button : _buttons)
+			for (auto &button : _buttons)
 			{
 				if (button.isActive())
 					if (button.isPressed(GetMousePos()))
@@ -92,11 +93,23 @@ public:
 };
 
 
-int main()
+int main(int argc, char** argv)
 {
-	TicTacToeGame demo;
-	if (demo.Construct(256, 240, 4, 4))
-		demo.Start();
+	// Doctest Testing
+	doctest::Context dtcontext;
+	int dtresult = 0;
+	dtcontext.applyCommandLine(argc, argv);
+	dtcontext.setOption("no-breaks", true); // Don't break in the debugger when assertions fail
 
-	return 0;
+	dtresult = dtcontext.run();
+	if (dtcontext.shouldExit()) // important - query flags (and --exit) rely on the user doing this
+		return dtresult;		// propagate the result of the tests
+
+	// End Doctest Testing
+
+	TicTacToeGame game;
+	if (game.Construct(256, 240, 4, 4))
+		game.Start();
+
+	return dtresult;
 }
