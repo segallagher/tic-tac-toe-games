@@ -70,9 +70,9 @@ TEST_CASE("BoardButton Clicking")
 	boardButton.setCallback(callback);
 
 	// Is pressed
-	for (int y = 0; y < position.y + dimensions.y + 5; y += 2)
+	for (int y = 0; y < position.y + dimensions.y + 5; y++)
 	{
-		for (int x = 0; x < position.x + dimensions.x + 5; x += 2)
+		for (int x = 0; x < position.x + dimensions.x + 5; x++)
 		{
 			// Set given tile to invalid
 			fakeBoard._givenTile = { -1, -1 };

@@ -36,12 +36,12 @@ Button::~Button()
 // ###########################################################################################################################
 
 
-void Button::drawSelf(olc::PixelGameEngine& gfx)
+void Button::drawSelf(olc::PixelGameEngine* gfx)
 {
 	if (_buttonDecal != nullptr)
-		gfx.DrawDecal(getPosition(), _buttonDecal);
+		gfx->DrawDecal(getPosition(), _buttonDecal, getDecalScale());
 	else
-		gfx.DrawRect(getPosition(), getDimensions(), olc::MAGENTA);
+		gfx->DrawRect(getPosition(), getDimensions(), olc::MAGENTA);
 }
 
 void Button::setCallback(std::function<void()> lambdaCallback)
@@ -67,8 +67,8 @@ bool Button::isPressed(olc::v2d_generic<int> mousePosition)
 bool Button::isPositionWithin(olc::v2d_generic<int> checkPosition)
 {
 	auto pos = checkPosition - getPosition();
-	if (pos.x >= 0 && pos.x < getDimensions().x)
-		if (pos.y >= 0 && pos.y < getDimensions().y)
+	if (pos.x >= 0 && pos.x <= getDimensions().x)
+		if (pos.y >= 0 && pos.y <= getDimensions().y)
 			return true;
 	return false;
 }
@@ -81,14 +81,23 @@ bool Button::isActive()
 {
 	return _isActive;
 }
-
-void Button::setDecal(olc::Decal& buttonDecal)
+void Button::setHidden(bool isHidden)
 {
-	_buttonDecal = &buttonDecal;
+	_isHidden = isHidden;
 }
-olc::Decal& Button::getDecal()
+bool Button::isHidden()
 {
-	return *_buttonDecal;
+	return _isHidden;
+}
+
+void Button::setDecal(olc::Decal* buttonDecal)
+{
+	_buttonDecal = buttonDecal;
+	adjustDecalScale();
+}
+olc::Decal* Button::getDecal()
+{
+	return _buttonDecal;
 }
 
 void Button::setPosition(olc::v2d_generic<int> position)
@@ -103,6 +112,7 @@ olc::v2d_generic<int> Button::getPosition()
 void Button::setDimensions(olc::v2d_generic<int> dimensions)
 {
 	_dimensions = dimensions;
+	adjustDecalScale();
 }
 olc::v2d_generic<int> Button::getDimensions()
 {
@@ -117,6 +127,10 @@ void Button::center(olc::v2d_generic<int> screenSize)
 	centerHorizontally(screenSize.x);
 	centerVertically(screenSize.y);
 }
+void Button::center(olc::PixelGameEngine* gfx)
+{
+	center(gfx->GetScreenSize());
+}
 void Button::centerHorizontally(int screenWidth)
 {
 	setPosition({ (screenWidth - getDimensions().x) / 2, getPosition().y });
@@ -125,6 +139,10 @@ void Button::centerHorizontally(olc::v2d_generic<int> screenSize)
 {
 	centerHorizontally(screenSize.x);
 }
+void Button::centerHorizontally(olc::PixelGameEngine* gfx)
+{
+	centerHorizontally(gfx->GetScreenSize().x);
+}
 void Button::centerVertically(int screenHeight)
 {
 	setPosition({ getPosition().x, (screenHeight - getDimensions().y) / 2 });
@@ -132,4 +150,47 @@ void Button::centerVertically(int screenHeight)
 void Button::centerVertically(olc::v2d_generic<int> screenSize)
 {
 	centerVertically(screenSize.y);
+}
+void Button::centerVertically(olc::PixelGameEngine* gfx)
+{
+	centerVertically(gfx->GetScreenSize().y);
+}
+
+void Button::alignTopRight(olc::v2d_generic<int> screenSize)
+{
+	setPosition({ screenSize.x - getDimensions().x - 1, 0 });
+}
+void Button::alignTopLeft()
+{
+	setPosition({ 0, 0 });
+}
+void Button::alignBottomRight(olc::v2d_generic<int> screenSize)
+{
+	setPosition({ screenSize.x - getDimensions().x - 1, screenSize.y - getDimensions().y - 1 });
+}
+void Button::alignBottomLeft(olc::v2d_generic<int> screenSize)
+{
+	setPosition({ 0, screenSize.y - getDimensions().y - 1});
+}
+
+
+// Protected
+
+void Button::adjustDecalScale()
+{
+	if (getDecal() != nullptr && getDimensions().x != 0 && getDimensions().y != 0)
+	{
+		auto xScale = float(getDimensions().x / float(getDecal()->sprite->width));
+		auto yScale = float(getDimensions().y / float(getDecal()->sprite->height));
+		setDecalScale({ xScale, yScale });
+	}
+}
+
+void Button::setDecalScale(olc::v2d_generic<float> newScale)
+{
+	_decalScale = newScale;
+}
+olc::v2d_generic<float> Button::getDecalScale()
+{
+	return _decalScale;
 }

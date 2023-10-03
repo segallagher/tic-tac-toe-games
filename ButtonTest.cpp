@@ -7,6 +7,13 @@
 #include "Button.h" // Double-inclusion test
 #include "doctest.h"
 
+class ButtonProtectedGetter : public Button
+{
+	public: 
+		olc::v2d_generic<float> getButtonDecalScale() { return getDecalScale(); }
+		void setButtonDecalScale(olc::v2d_generic<float> newScale) { setDecalScale(newScale); }
+};
+
 TEST_CASE("Button Constructors")
 {
 	// Test values
@@ -74,7 +81,7 @@ TEST_CASE("Button Position and Dimension")
 			// Horizontal
 			button.setPosition({ 0, 0 });
 			button.centerHorizontally({ x, y });
-			CHECK(button.getPosition() == olc::vi2d{ (x - dimx) / 2 , 0});
+			CHECK(button.getPosition() == olc::vi2d{ (x - dimx) / 2, 0});
 
 			// Vertical
 			button.setPosition({ 0, 0 });
@@ -87,6 +94,26 @@ TEST_CASE("Button Position and Dimension")
 			CHECK(button.getPosition() == olc::vi2d{ (x - dimx) / 2, (y - dimy) / 2 });
 		}
 	}
+
+	// Aligning with a corner
+	auto screenSize = olc::vi2d{ 100, 100 };
+	auto rightLeftExtremePositions = olc::vi2d{ screenSize.x - button.getDimensions().x - 1, screenSize.y - button.getDimensions().y - 1 };
+	
+	button.center(screenSize);
+	button.alignTopLeft();
+	CHECK(button.getPosition() == olc::vi2d{ 0, 0 });
+
+	button.center(screenSize);
+	button.alignTopRight(screenSize);
+	CHECK(button.getPosition() == olc::vi2d{ rightLeftExtremePositions.x, 0 });
+
+	button.center(screenSize);
+	button.alignBottomLeft(screenSize);
+	CHECK(button.getPosition() == olc::vi2d{ 0, rightLeftExtremePositions.y });
+
+	button.center(screenSize);
+	button.alignBottomRight(screenSize);
+	CHECK(button.getPosition() == rightLeftExtremePositions);
 }
 
 TEST_CASE("Button Callback")
@@ -118,15 +145,15 @@ TEST_CASE("Button Clicking")
 	button.setCallback(callback);
 
 	// Is position within
-	for (int y = 0; y < position.y + dimensions.y + 5; y += 2)
+	for (int y = 0; y < position.y + dimensions.y + 5; y++)
 	{
-		for (int x = 0; x < position.x + dimensions.x + 5; x += 2)
+		for (int x = 0; x < position.x + dimensions.x + 5; x++)
 		{
 			INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
 			bool result = button.isPositionWithin({ x, y });
 
-			if(x >= position.x && x < position.x + dimensions.x &&
-				y >= position.y && y < position.y + dimensions.y)
+			if(x >= position.x && x <= position.x + dimensions.x &&
+				y >= position.y && y <= position.y + dimensions.y)
 				CHECK(result == true);
 			else
 				CHECK(result == false);
@@ -134,16 +161,16 @@ TEST_CASE("Button Clicking")
 	}
 
 	// Is pressed
-	for (int y = 0; y < position.y + dimensions.y + 5; y += 2)
+	for (int y = 0; y < position.y + dimensions.y + 5; y++)
 	{
-		for (int x = 0; x < position.x + dimensions.x + 5; x += 2)
+		for (int x = 0; x < position.x + dimensions.x + 5; x++)
 		{
 			INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
 			clickRecieved = false;
 			bool result = button.isPressed({ x, y });
 
-			if (x >= position.x && x < position.x + dimensions.x &&
-				y >= position.y && y < position.y + dimensions.y)
+			if (x >= position.x && x <= position.x + dimensions.x &&
+				y >= position.y && y <= position.y + dimensions.y)
 				CHECK(clickRecieved == true);
 			else
 				CHECK(clickRecieved == false);
@@ -164,5 +191,25 @@ TEST_CASE("Button Clicking")
 	result = button.isPressed({ position.x + dimensions.x / 2, position.y + dimensions.y / 2 });
 	INFO("isActive is set to true");
 	CHECK(clickRecieved == true);
+
+
+	// Test setHidden and isHidden
+	button.setHidden(false);
+	CHECK(button.isHidden() == false);
+	button.setHidden(true);
+	CHECK(button.isHidden() == true);
 }
 
+TEST_CASE("Set Decal Scale")
+{
+	ButtonProtectedGetter button;
+	auto scale = olc::vf2d(5.1f, 2.9f);
+	for (size_t i = 0; i < 5; i++)
+	{
+		button.setButtonDecalScale(scale);
+		CHECK(button.getButtonDecalScale().x == doctest::Approx(scale.x));
+		CHECK(button.getButtonDecalScale().y == doctest::Approx(scale.y));
+		scale.x *= 2.054f;
+		scale.y *= 0.937f;
+	}
+}

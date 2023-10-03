@@ -17,7 +17,7 @@ public:
 	Button(olc::v2d_generic<int> position, olc::Decal& buttonDecal, std::function<void()> lambdaCallback);
 	~Button();
 
-	virtual void drawSelf(olc::PixelGameEngine& gfx);
+	virtual void drawSelf(olc::PixelGameEngine* gfx);
 	void setCallback(std::function<void()> lambdaCallback);
 	std::function<void()>  getCallback();
 	virtual bool isPressed(olc::v2d_generic<int> mousePosition);
@@ -25,9 +25,11 @@ public:
 
 	void setActive(bool isActive);
 	bool isActive();
+	void setHidden(bool isHidden);
+	bool isHidden();
 
-	void setDecal(olc::Decal& buttonDecal);
-	olc::Decal& getDecal();
+	void setDecal(olc::Decal* buttonDecal);
+	olc::Decal* getDecal();
 
 	void setPosition(olc::v2d_generic<int> position);
 	olc::v2d_generic<int> getPosition();
@@ -35,16 +37,34 @@ public:
 	olc::v2d_generic<int> getDimensions();
 
 	void center(olc::v2d_generic<int> screenSize);
+	void center(olc::PixelGameEngine* gfx);
+
 	void centerHorizontally(int screenWidth);
 	void centerHorizontally(olc::v2d_generic<int> screenSize);
+	void centerHorizontally(olc::PixelGameEngine* gfx);
+
 	void centerVertically(int screenHeight);
 	void centerVertically(olc::v2d_generic<int> screenSize);
+	void centerVertically(olc::PixelGameEngine* gfx);
+
+	void alignTopRight(olc::v2d_generic<int> screenSize);
+	void alignTopLeft();
+	void alignBottomRight(olc::v2d_generic<int> screenSize);
+	void alignBottomLeft(olc::v2d_generic<int> screenSize);
 
 protected:
+	void adjustDecalScale();
+
+	void setDecalScale(olc::v2d_generic<float> newScale);
+	olc::v2d_generic<float> getDecalScale();
+
+protected:
+	olc::v2d_generic<float> _decalScale = { 1.0f, 1.0f };
 	olc::Decal* _buttonDecal = nullptr;
 	olc::v2d_generic<int> _position;
 	olc::v2d_generic<int> _dimensions;
 	bool _isActive = true;
+	bool _isHidden = false;
 
 	std::function<void()> _callback = nullptr;
 };
