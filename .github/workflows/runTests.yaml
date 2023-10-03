@@ -16,4 +16,5 @@ jobs:
               id: button-test
               run: | 
                   echo "hello"
+                  g++ -v
     
