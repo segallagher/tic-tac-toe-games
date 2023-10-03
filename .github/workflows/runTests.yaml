@@ -1,0 +1,22 @@
+name: run-tests
+
+on: 
+    push:
+        branches:
+            - main
+    
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v1
+
+            - name: Button test
+              id: button-test
+              run: | 
+                  g++ -v
+                  g++ ButtonTest.cpp
+                  ls
+                  ./a.out
+    
