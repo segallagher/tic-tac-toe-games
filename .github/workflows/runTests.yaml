@@ -22,11 +22,11 @@ jobs:
             - name: Run tests
               id: tests
               run: | 
-                  g++ -o test.exe ^
-                  test.cpp ^
-                  BoardButton.cpp ^
-                  BoardButtonTest.cpp ^
-                  Button.cpp ^
-                  ButtonTest.cpp ^
+                  g++ -o test.exe `
+                  test.cpp `
+                  BoardButton.cpp `
+                  BoardButtonTest.cpp `
+                  Button.cpp `
+                  ButtonTest.cpp `
                   -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++17
                   ./test.exe
