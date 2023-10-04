@@ -19,8 +19,8 @@ jobs:
 
             - name: Install dependencies
               run: | 
-                  sudo apt-get -y install mesa-commmon-dev
-                  sudo apt-get install libpng-dev
+                  sudo apt-get -y install mesa-common-dev
+                  sudo apt-get -y install libpng-dev
 
             - name: Button test
               id: button-test
