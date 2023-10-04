@@ -17,6 +17,11 @@ jobs:
                   sudo apt install g++
                   gcc -v
 
+            - name: Install dependencies
+              run: | 
+                  sudo apt-get -y install mesa-commmon-dev
+                  sudo apt-get install libpng-dev
+
             - name: Button test
               id: button-test
               run: | 
