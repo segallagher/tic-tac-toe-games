@@ -20,7 +20,7 @@ jobs:
             - name: Install dependencies
               run: | 
                   sudo apt update
-                  sudo apt -y install build-essential libglu1-mesa-dev libpng-dev doctest
+                  sudo apt -y install build-essential libglu1-mesa-dev libpng-dev
 
             - name: Button test
               id: button-test
