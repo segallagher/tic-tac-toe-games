@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@
+              uses: actions/checkout@2
 
             - name: Button test
               id: button-test
