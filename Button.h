@@ -18,6 +18,8 @@ public:
 	~Button();
 
 	virtual void drawSelf(olc::PixelGameEngine* gfx);
+	// [&] captures all variables for use in lambda (note items that will be out of scope)
+	// [&objectName] captures only objectName by reference
 	void setCallback(std::function<void()> lambdaCallback);
 	std::function<void()>  getCallback();
 	virtual bool isPressed(olc::v2d_generic<int> mousePosition);

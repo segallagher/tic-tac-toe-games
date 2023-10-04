@@ -138,12 +138,17 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="doctest.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Sprites\BoardBorder.png" />
+    <Image Include="Sprites\IconForTicTac.ico" />
     <Image Include="Sprites\OTile.png" />
     <Image Include="Sprites\TileBackground.png" />
     <Image Include="Sprites\XTile.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="tic-tac-toe-games.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

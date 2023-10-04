@@ -34,8 +34,8 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
 
     // Parameter setting
     auto boarderOffset = olc::vi2d(32, 32);
-    auto width = _gameBoard->size();
-    auto height = _gameBoard[0].size();
+    auto height = _gameBoard->size();
+    auto width = (*_gameBoard)[0].size();
     auto internalOffsets = olc::vf2d(
         float(getDimensions().x) * (float(boarderOffset.x) / float(getBorderDecal()->sprite->width)),
         float(getDimensions().y) * (float(boarderOffset.y) / float(getBorderDecal()->sprite->height)));
@@ -43,8 +43,8 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
 
 
     // TileBackground
-    for (size_t y = 0; y < width; y++)
-        for (size_t x = 0; x < height; x++)
+    for (size_t y = 0; y < height; y++)
+        for (size_t x = 0; x < width; x++)
             attemptDrawDecal(
                 getTileDecal(),
                 olc::vf2d(getPosition()) + (internalOffsets + olc::vf2d(tileSize.x * x, tileSize.y * y)),
@@ -57,8 +57,8 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
     attemptDrawDecal(getBorderDecal(), getPosition(), getDimensions(), getDecalScale(), olc::MAGENTA, olc::GREY);
 
     // Top tiles
-    for (size_t y = 0; y < width; y++)
-        for (size_t x = 0; x < height; x++)
+    for (size_t y = 0; y < height; y++)
+        for (size_t x = 0; x < width; x++)
         {
             if ((*_gameBoard)[y][x] == 0) // No tile
                 continue;
@@ -84,9 +84,17 @@ bool BoardButton::isPressed(olc::v2d_generic<int> mousePosition)
 }
 olc::v2d_generic<int> BoardButton::getClickedTile(olc::v2d_generic<int> boardDimensions)
 {
-    int tileX = (_clickedPosition.x - getPosition().x) / boardDimensions.x;
-    int tileY = (_clickedPosition.y - getPosition().y) / boardDimensions.y;
+    int tileX = (_clickedPosition.x - getPosition().x) / (getDimensions().x / boardDimensions.x);
+    int tileY = (_clickedPosition.y - getPosition().y) / (getDimensions().y / boardDimensions.y);
     return { tileX, tileY };
+}
+olc::v2d_generic<int> BoardButton::getClickedTile()
+{
+    std::cout << "[DEMO CODE]: getClickedTile() cycles the clicked tile." << std::endl;
+    auto clickedTile = getClickedTile({ int(getBoard()->size()), int(getBoard()[0].size()) });
+    (*_gameBoard)[clickedTile.y][clickedTile.x] = ((*_gameBoard)[clickedTile.y][clickedTile.x] + 1) % 3;
+
+        return clickedTile;
 }
 
 void BoardButton::setBorderDecal(olc::Decal* borderDecal)

@@ -20,6 +20,8 @@ public:
 	virtual void drawSelf(olc::PixelGameEngine* gfx) override;
 	virtual bool isPressed(olc::v2d_generic<int> mousePosition) override;
 	olc::v2d_generic<int> getClickedTile(olc::v2d_generic<int> boardDimensions);
+	// Needs testing
+	olc::v2d_generic<int> getClickedTile();
 
 	void setBorderDecal(olc::Decal* borderDecal);
 	olc::Decal* getBorderDecal();

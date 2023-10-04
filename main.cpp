@@ -17,7 +17,7 @@ class TicTacToeGame : public olc::PixelGameEngine
 public:
 	TicTacToeGame()
 	{
-		sAppName = "Tic Tac Toe BIG";
+		sAppName = "Tic Tac Toe Games";
 	}
 
 public:
@@ -66,7 +66,39 @@ public:
 	// Buttons
 	void buttonSetup()
 	{
-		std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
+		// Board display
+		auto superBoardDimensions = olc::vi2d(3, 3);
+		for (size_t y = 0; y < superBoardDimensions.y; y++)
+		{
+			for (size_t x = 0; x < superBoardDimensions.x; x++)
+			{
+				std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
+				boardButton->setDimensions({ GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000 });
+				boardButton->setDecal(_boardBorder.Decal());
+				boardButton->setTileDecal(_boardTileBackground.Decal());
+				boardButton->setODecal(_boardOTile.Decal());
+				boardButton->setXDecal(_boardXTile.Decal());
+				boardButton->center(GetScreenSize());
+
+				// Top left position
+				boardButton->setPosition(
+					boardButton->getPosition() - olc::vi2d(
+						boardButton->getDimensions().x,
+						boardButton->getDimensions().y));
+				boardButton->setPosition(
+					boardButton->getPosition() + olc::vi2d(
+						boardButton->getDimensions().x * x,
+						boardButton->getDimensions().y * y));
+
+				_buttons.push_back(std::move(boardButton));
+
+				auto buttonPtr = _buttons.back().get();
+				(dynamic_cast<BoardButton*>(buttonPtr))->setBoard(&(_testBoardBig[y * superBoardDimensions.x + x]));
+				auto boardButtonCallback = [buttonPtr] {std::cout << (dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile() << std::endl; };
+				_buttons.back()->setCallback(boardButtonCallback);
+			}
+		}
+		/*std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
 		boardButton->setDimensions(GetScreenSize() * 70 / 100);
 		boardButton->setDecal(_boardBorder.Decal());
 		boardButton->setTileDecal(_boardTileBackground.Decal());
@@ -78,32 +110,72 @@ public:
 		
 		auto buttonPtr = _buttons.back().get();
 		(dynamic_cast<BoardButton*>(buttonPtr))->setBoard(&_testBoard);
-		auto boardButtonCallback = [buttonPtr] {std::cout << (dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile({5, 5}) << std::endl; };
-		_buttons.back()->setCallback(boardButtonCallback);
+		auto boardButtonCallback = [buttonPtr] {std::cout << (dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile() << std::endl; };
+		_buttons.back()->setCallback(boardButtonCallback);*/
 
+		// Request dimensions input
+		Button buttonSetBoardDimensions({ 0, 0 }, { 20, 20 });
+		buttonSetBoardDimensions.setDecal(_boardTileBackground.Decal());
+		buttonSetBoardDimensions.alignTopRight(GetScreenSize());
+		buttonSetBoardDimensions.setCallback([&] 
+			{ 
+				int inX = 0;
+				int inY = 0;
+				std::cout << "New board dimensions:" << std::endl;
+				std::cout << "x = ";
+				std::cin >> inX;
+				std::cout << "y = ";
+				std::cin >> inY;
 
-		// Simple adhoc button test
+				// Set y
+				if (_useBigBoard)
+				{
+					for (size_t y = 0; y < _testBoardBig.size(); y++)
+					{
+						_testBoardBig[y] = std::vector<std::vector<int>>(inY);
+						for (size_t x = 0; x < _testBoardBig[0].size(); x++)
+							_testBoardBig[y][x] = std::vector<int>(inX);
+					}
+				}
+				else
+				{
+					_testBoard = std::vector<std::vector<int>>(inY);
+					for (size_t i = 0; i < _testBoard.size(); i++)
+					{
+						// Set x
+						_testBoard[i] = std::vector<int>(inX);
+					}
+				}
 
-		Button button({ 0, 0 }, { 30, 30 });
-		button.setDecal(_boardBorder.Decal());
-		button.alignBottomRight(GetScreenSize());
-		button.setCallback([] { std::cout << "B1 Is Pressed!" << std::endl; });
-		_buttons.push_back(std::make_unique<Button>(button));
-
-		Button button2({ 0, 0 }, { 5, 5 });
-		button2.alignTopRight(GetScreenSize());
-		// [&] captures all variables for use in lambda (note items that will be out of scope)
-		button2.setCallback([&] { std::cout << "B2 Is Pressed!" << std::endl; 
-			_buttons[1]->alignTopLeft(); 
-			_buttons[1]->setCallback([&] 
-				{	
-					std::cout << "B1 Is Pressed!" << std::endl;
-					_buttons[2]->alignBottomLeft(GetScreenSize());
-				});
+				std::cout << "Board resized" << std::endl;
 			});
-		_buttons.push_back(std::make_unique<Button>(button2));
+		_buttons.push_back(std::make_unique<Button>(buttonSetBoardDimensions));
 
-		std::cout << "Button count: " << _buttons.size() << std::endl;
+		// Board randomizer
+		Button buttonBoardRandomizer({ 0, 0 }, { 20, 20 });
+		buttonSetBoardDimensions.setDecal(_boardOTile.Decal());
+		buttonBoardRandomizer.alignTopRight(GetScreenSize());
+		buttonBoardRandomizer.setPosition(buttonBoardRandomizer.getPosition() + olc::vi2d(0, 25));
+		buttonBoardRandomizer.setCallback([&] 
+			{ 
+				if(_useBigBoard)
+					for (size_t z = 0; z < _testBoardBig.size(); z++)
+						for (size_t y = 0; y < _testBoardBig[0].size(); y++)
+							for (size_t x = 0; x < _testBoardBig[0][0].size(); x++)
+								_testBoardBig[z][y][x] = rand() % 3;
+				else
+				{
+					for (size_t y = 0; y < _testBoard.size(); y++)
+						for (size_t x = 0; x < _testBoard[0].size(); x++)
+							_testBoard[y][x] = rand() % 3;
+				}
+
+				std::cout << "Board Randomized!" << std::endl;
+			});
+		_buttons.push_back(std::make_unique<Button>(buttonBoardRandomizer));
+
+		// Outputs the number of buttons
+		std::cout << "[DEbug]: Button count: " << _buttons.size() << std::endl;
 	}
 	void drawButtons()
 	{
@@ -133,10 +205,16 @@ public:
 	olc::Renderable _boardXTile;
 
 	// Testing board
+	bool _useBigBoard = true;
 	std::vector<std::vector<int>> _testBoard = {
 		{ 1, 2, 1 },
 		{ 1, 2, 0 },
 		{ 1, 0, 2 }
+	};
+	std::vector<std::vector<std::vector<int>>> _testBoardBig = {
+		{{1}}, {{2}}, {{1}},
+		{{1}}, {{2}}, {{0}},
+		{{1}}, {{0}}, {{2}}
 	};
 };
 
