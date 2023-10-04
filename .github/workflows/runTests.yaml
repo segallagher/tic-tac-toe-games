@@ -25,5 +25,5 @@ jobs:
             - name: Button test
               id: button-test
               run: | 
-                  g++ -o test test.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++17
-                  ./test
+                  g++ -o main main.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++17
+                  ./main
