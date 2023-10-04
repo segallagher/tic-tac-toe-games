@@ -18,6 +18,5 @@ jobs:
             - name: Button test
               id: button-test
               run: | 
-                  g++ -o ButtonTest ButtonTest.cpp
-                  echo "\n\n\n"
-                  ./ButtonTest
+                  g++ -o test.exe test.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++17
+                  ./test.exe
