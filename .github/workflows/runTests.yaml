@@ -15,6 +15,7 @@ jobs:
             - name: Install g++
               run: |
                   sudo apt install g++
+                  gcc -v
 
             - name: Button test
               id: button-test
