@@ -10,10 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v2
-
-            - name: Set up C++ environment
-              uses: actions/setup-cpp@v1
+              uses: actions/checkout@
 
             - name: Button test
               id: button-test
