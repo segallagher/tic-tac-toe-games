@@ -12,6 +12,10 @@ jobs:
             - name: Checkout repository
               uses: actions/checkout@v2
 
+            - name: Install g++
+              run: |
+                  sudo apt install g++
+
             - name: Button test
               id: button-test
               run: | 
