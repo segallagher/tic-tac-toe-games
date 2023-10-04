@@ -10,20 +10,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
-            - name: install gcc
-              run: | 
-                  # Linux/Macos example
-                  sudo npx setup-cpp --compiler llvm --cmake true --ninja true --ccache true --vcpkg 
-                  source ~/.cpprc
-
+            - name: Set up C++ environment
+              uses: actions/setup-cpp@v1
 
             - name: Button test
               id: button-test
               run: | 
-                  g++ -v
-                  g++ ButtonTest.cpp -o ButtonTest.exe
-                  ls
-                  ./ButtonTest.exe
-    
+                  g++ -o ButtonTest ButtonTest.cpp
+                  echo "\n\n\n"
+                  ./ButtonTest
