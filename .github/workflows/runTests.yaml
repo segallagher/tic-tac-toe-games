@@ -16,7 +16,7 @@ jobs:
               id: button-test
               run: | 
                   g++ -v
-                  g++ ButtonTest.cpp -o ButtonTest
+                  g++ ButtonTest.cpp -o ButtonTest.exe
                   ls
-                  ./a.out
+                  ./ButtonTest.exe
     
