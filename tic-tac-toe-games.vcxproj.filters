@@ -45,4 +45,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="Sprites\BoardBorder.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\OTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\TileBackground.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\XTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
 </Project>
