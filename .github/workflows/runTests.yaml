@@ -19,12 +19,12 @@ jobs:
 
             - name: Install dependencies
               run: | 
-                  sudo apt-get -y install mesa-common-dev
-                  sudo apt-get -y install libpng-dev
+                  sudo apt update
+                  sudo apt install build-essential libglu1-mesa-dev libpng-dev
 
             - name: Button test
               id: button-test
               run: | 
                   #g++ -o test.exe test.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++17
-                  g++ -o test test.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -std=c++17
+                  g++ -o test test.cpp BoardButton.cpp BoardButtonTest.cpp Button.cpp ButtonTest.cpp -lX11 -lGL -lpthread -lpng -lstdc++fs -std=c++17
                   ./test
