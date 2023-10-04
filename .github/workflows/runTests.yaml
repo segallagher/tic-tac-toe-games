@@ -7,16 +7,26 @@ on:
     
 jobs:
     test:
-        runs-on: ubuntu-latest
+        runs-on: windows-latest
         steps:
             - name: Checkout repository
-              uses: actions/checkout@v1
+              uses: actions/checkout@v2
 
-            - name: Button test
-              id: button-test
+            - name: msys
+              uses: msys2/setup-msys2@v2
+              with:
+                msystem: UCRT64
+                update: true
+                install: git mingw-w64-ucrt-x86_64-gcc
+
+            - name: Run tests
+              id: tests
               run: | 
-                  g++ -v
-                  g++ ButtonTest.cpp
-                  ls
-                  ./a.out
-    
+                  g++ -o test.exe `
+                  test.cpp `
+                  BoardButton.cpp `
+                  BoardButtonTest.cpp `
+                  Button.cpp `
+                  ButtonTest.cpp `
+                  -luser32 -lgdi32 -lopengl32 -lgdiplus -lShlwapi -ldwmapi -lstdc++fs -static -std=c++17
+                  ./test.exe
