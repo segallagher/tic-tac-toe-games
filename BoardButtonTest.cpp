@@ -83,8 +83,8 @@ TEST_CASE("BoardButton Clicking")
 				INFO("BoardButton records the mouse input location");
 				CHECK(boardButton.getClickedLocation() == olc::vi2d{ x, y });
 
-				int tileX = (x - position.x) / fakeBoard.getDimensions().x;
-				int tileY = (y - position.y) / fakeBoard.getDimensions().y;
+				int tileX = (x - position.x) / (boardButton.getDimensions().x / fakeBoard.getDimensions().x);
+				int tileY = (y - position.y) / (boardButton.getDimensions().y / fakeBoard.getDimensions().y);
 				INFO("BoardButton gives the correct tile for mouse input");
 				CHECK(fakeBoard._givenTile == olc::vi2d{ tileX, tileY });
 			}
