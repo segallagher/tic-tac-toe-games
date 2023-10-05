@@ -23,7 +23,11 @@ public:
 	void setCallback(std::function<void()> lambdaCallback);
 	std::function<void()>  getCallback();
 	virtual bool isPressed(olc::v2d_generic<int> mousePosition);
+	// Needs testing code
+	bool isPressed(olc::v2d_generic<int> mousePosition, olc::v2d_generic<float> buttonDimensions, olc::v2d_generic<float> offset = { 0, 0 });
 	bool isPositionWithin(olc::v2d_generic<int> position);
+	// Needs testing code
+	bool isPositionWithin(olc::v2d_generic<int> checkPosition, olc::v2d_generic<float> buttonDimensions, olc::v2d_generic<float> offset = { 0, 0 });
 
 	void setActive(bool isActive);
 	bool isActive();

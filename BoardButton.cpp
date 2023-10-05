@@ -25,36 +25,25 @@ BoardButton::BoardButton(olc::v2d_generic<int> position, olc::Decal& tileDecal, 
 
 void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
 {
-    auto attemptDrawDecal = [&](olc::Decal* decal, olc::v2d_generic<float> decalPosition, olc::v2d_generic<int> rectDimensions, olc::v2d_generic<float> decalScale, olc::Pixel errorColor, olc::Pixel decalTint = olc::WHITE) {
-        if (decal != nullptr)
-            gfx->DrawDecal(decalPosition, decal, decalScale, decalTint);
-        else
-            gfx->DrawRect(decalPosition, rectDimensions, errorColor);
-        };
-
     // Parameter setting
-    auto boarderOffset = olc::vi2d(32, 32);
     auto height = _gameBoard->size();
     auto width = (*_gameBoard)[0].size();
-    auto internalOffsets = olc::vf2d(
-        float(getDimensions().x) * (float(boarderOffset.x) / float(getBorderDecal()->sprite->width)),
-        float(getDimensions().y) * (float(boarderOffset.y) / float(getBorderDecal()->sprite->height)));
-    auto tileSize = olc::vf2d(float(getDimensions().x - (internalOffsets.x * 2.0f)) / float(width), float(getDimensions().y - (internalOffsets.y * 2.0f)) / float(height));
-
+    auto internalOffsets = getInternalClickableOffsets();
+    auto tileSize = getTileSize(width, height, internalOffsets);
 
     // TileBackground
     for (size_t y = 0; y < height; y++)
         for (size_t x = 0; x < width; x++)
             attemptDrawDecal(
+                gfx,
                 getTileDecal(),
-                olc::vf2d(getPosition()) + (internalOffsets + olc::vf2d(tileSize.x * x, tileSize.y * y)),
+                getTilePosition(tileSize, internalOffsets, x, y),
                 tileSize,
-                { tileSize.x / float(getTileDecal()->sprite->Size().x), tileSize.y / float(getTileDecal()->sprite->Size().y) },
-                olc::MAGENTA,
-                olc::GREY);
+                getTileScale(tileSize, getTileDecal()->sprite->Size()),
+                olc::Pixel(150, 150, 150)); // Lighter than olc::DARK_GREY
 
     // Border
-    attemptDrawDecal(getBorderDecal(), getPosition(), getDimensions(), getDecalScale(), olc::MAGENTA, olc::GREY);
+    attemptDrawDecal(gfx, getBorderDecal(), getPosition(), getDimensions(), getDecalScale(), olc::DARK_GREY);
 
     // Top tiles
     for (size_t y = 0; y < height; y++)
@@ -69,23 +58,32 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
                     decal = getXDecal();
 
                 attemptDrawDecal(
+                    gfx,
                     decal,
-                    olc::vf2d(getPosition()) + (internalOffsets + olc::vf2d(tileSize.x * x, tileSize.y * y)),
+                    getTilePosition(tileSize, internalOffsets, x, y),
                     tileSize,
-                    olc::vf2d(tileSize.x / float(getODecal()->sprite->Size().x), tileSize.y / float(getODecal()->sprite->Size().y)),
-                    olc::MAGENTA);
+                    getTileScale(tileSize, decal->sprite->Size()));
             }
         }
 }
 bool BoardButton::isPressed(olc::v2d_generic<int> mousePosition)
 {
     _clickedPosition = mousePosition;
-    return Button::isPressed(mousePosition);
+    auto internalOffsets = olc::vf2d();
+    if (getBorderDecal() != nullptr)
+        internalOffsets = getInternalClickableOffsets();
+
+    return Button::isPressed(mousePosition, olc::vf2d(
+        float(getDimensions().x) - (internalOffsets.x * 2.0f), 
+        float(getDimensions().y) - (internalOffsets.y * 2.0f)),
+        internalOffsets);
 }
 olc::v2d_generic<int> BoardButton::getClickedTile(olc::v2d_generic<int> boardDimensions)
 {
     int tileX = (_clickedPosition.x - getPosition().x) / (getDimensions().x / boardDimensions.x);
     int tileY = (_clickedPosition.y - getPosition().y) / (getDimensions().y / boardDimensions.y);
+    tileX = std::min(tileX, boardDimensions.x);
+    tileY = std::min(tileY, boardDimensions.y);
     return { tileX, tileY };
 }
 olc::v2d_generic<int> BoardButton::getClickedTile()
@@ -139,8 +137,43 @@ void BoardButton::setBoard(std::vector<std::vector<int>>* board)
     //setCallback([&][&fakeBoard, &boardButton]{ fakeBoard.setTile(boardButton.getClickedTile(fakeBoard.getDimensions())); };)
     std::cout << "[Debug]: BoardButton requires a reference or pointer to the board and a CALLBACK to be set." << std::endl;
 }
-
 std::vector<std::vector<int>>* BoardButton::getBoard()
 {
     return _gameBoard;
+}
+
+olc::v2d_generic<int> BoardButton::getBorderOffset()
+{
+    return _boarderOffset;
+}
+
+olc::v2d_generic<float> BoardButton::getInternalClickableOffsets(olc::v2d_generic<int> spriteSize)
+{
+    return olc::vf2d(
+        float(getDimensions().x) * (float(getBorderOffset().x) / float(spriteSize.x)),
+        float(getDimensions().y) * (float(getBorderOffset().y) / float(spriteSize.y)));
+}
+olc::v2d_generic<float> BoardButton::getInternalClickableOffsets()
+{
+    return getInternalClickableOffsets(getBorderDecal()->sprite->Size());
+}
+
+void BoardButton::attemptDrawDecal(olc::PixelGameEngine* gfx, olc::Decal* decal, olc::v2d_generic<float> decalPosition, olc::v2d_generic<int> rectDimensions, olc::v2d_generic<float> decalScale, olc::Pixel decalTint, olc::Pixel errorColor) {
+    if (decal != nullptr)
+        gfx->DrawDecal(decalPosition, decal, decalScale, decalTint);
+    else
+        gfx->DrawRect(decalPosition, rectDimensions, errorColor);
+};
+
+olc::v2d_generic<float> BoardButton::getTileSize(int boardWidth, int boardHeight, olc::v2d_generic<float> internalOffsets)
+{
+    return olc::vf2d(float(getDimensions().x - (internalOffsets.x * 2.0f)) / float(boardWidth), float(getDimensions().y - (internalOffsets.y * 2.0f)) / float(boardHeight));
+}
+olc::v2d_generic<float> BoardButton::getTilePosition(olc::v2d_generic<float> tileSize, olc::v2d_generic<float> internalOffsets, int xOffset, int yOffset)
+{
+    return olc::vf2d(getPosition()) + (internalOffsets + olc::vf2d(tileSize.x * xOffset, tileSize.y * yOffset));
+}
+olc::v2d_generic<float> BoardButton::getTileScale(olc::v2d_generic<float> tileSize, olc::v2d_generic<int> spriteSize)
+{
+    return { tileSize.x / float(spriteSize.x), tileSize.y / float(spriteSize.y) };
 }

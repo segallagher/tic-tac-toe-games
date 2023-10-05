@@ -54,7 +54,11 @@ std::function<void()> Button::getCallback()
 }
 bool Button::isPressed(olc::v2d_generic<int> mousePosition)
 {
-	if (isActive() && isPositionWithin(mousePosition))
+	return isPressed(mousePosition, getDimensions());
+}
+bool Button::isPressed(olc::v2d_generic<int> mousePosition, olc::v2d_generic<float> buttonDimensions, olc::v2d_generic<float> offset)
+{
+	if (isActive() && isPositionWithin(mousePosition, buttonDimensions, offset))
 	{
 		if (_callback != nullptr)
 			_callback();
@@ -66,9 +70,13 @@ bool Button::isPressed(olc::v2d_generic<int> mousePosition)
 }
 bool Button::isPositionWithin(olc::v2d_generic<int> checkPosition)
 {
-	auto pos = checkPosition - getPosition();
-	if (pos.x >= 0 && pos.x <= getDimensions().x)
-		if (pos.y >= 0 && pos.y <= getDimensions().y)
+	return isPositionWithin(checkPosition, getDimensions());
+}
+bool Button::isPositionWithin(olc::v2d_generic<int> checkPosition, olc::v2d_generic<float> buttonDimensions, olc::v2d_generic<float> offset)
+{
+	auto pos = olc::vf2d(checkPosition - getPosition()) - offset;
+	if (pos.x >= 0.0f && pos.x <= buttonDimensions.x)
+		if (pos.y >= 0.0f && pos.y <= buttonDimensions.y)
 			return true;
 	return false;
 }

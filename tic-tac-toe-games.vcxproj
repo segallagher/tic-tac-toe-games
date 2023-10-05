@@ -132,7 +132,6 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonTest.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="test.cpp" />
     <ClCompile Include="TicTacToeGame.cpp" />
   </ItemGroup>
   <ItemGroup>
