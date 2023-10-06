@@ -53,6 +53,9 @@
     <ClInclude Include="TicTacToeGame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="a.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Sprites\BoardBorder.png">
