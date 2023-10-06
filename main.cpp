@@ -3,7 +3,6 @@
 // 2023-09-30
 // The main.cpp file for tic-tac-toe games
 
-#define OLC_PGE_APPLICATION
 #include "TicTacToeGame.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT

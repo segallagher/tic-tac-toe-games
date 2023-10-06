@@ -3,8 +3,8 @@
 // 2023-10-01
 // Source file for TicTacToeGame class
 
+#define OLC_PGE_APPLICATION
 #include "TicTacToeGame.h"
-
 
 // ###########################################################################################################################
 // Constructors

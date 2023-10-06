@@ -3,13 +3,13 @@
 // 2023-10-01
 // Header file for TicTacToeGame class
 
+#ifndef TicTacToeGame_HPP
+#define TicTacToeGame_HPP
+
 #include "olcPixelGameEngine.h"
 #include "Button.h"
 #include "BoardButton.h"
 #include <utility>
-
-#ifndef TicTacToeGame_HPP
-#define TicTacToeGame_HPP
 
 class TicTacToeGame : public olc::PixelGameEngine
 {
