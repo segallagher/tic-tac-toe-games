@@ -3,7 +3,7 @@
 // 2023-09-30
 // Source file for Button (a class that will serve as a clickable item that will call a function given to it).
 
-#include "Button.h";
+#include "Button.h"
 
 // Constructors
 Button::Button() : Button::Button({ 0, 0 }, { 0, 0 })

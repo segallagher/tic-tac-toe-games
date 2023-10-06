@@ -1,5 +1,5 @@
 // TicTacToeGame.h
-// Nathan Damon
+// Samuel Gallagher
 // 2023-10-01
 // Header file for TicTacToeGame class
 

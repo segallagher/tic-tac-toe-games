@@ -82,8 +82,8 @@ olc::v2d_generic<int> BoardButton::getClickedTile(olc::v2d_generic<int> boardDim
 {
     int tileX = (_clickedPosition.x - getPosition().x) / (getDimensions().x / boardDimensions.x);
     int tileY = (_clickedPosition.y - getPosition().y) / (getDimensions().y / boardDimensions.y);
-    tileX = std::min(tileX, boardDimensions.x);
-    tileY = std::min(tileY, boardDimensions.y);
+    tileX = std::min(tileX, boardDimensions.x - 1);
+    tileY = std::min(tileY, boardDimensions.y - 1);
     return { tileX, tileY };
 }
 olc::v2d_generic<int> BoardButton::getClickedTile()
