@@ -86,7 +86,7 @@ TEST_CASE("BoardButton Clicking")
 				int tileX = (x - position.x) / (boardButton.getDimensions().x / fakeBoard.getDimensions().x);
 				int tileY = (y - position.y) / (boardButton.getDimensions().y / fakeBoard.getDimensions().y);
 				INFO("BoardButton gives the correct tile for mouse input");
-				CHECK(fakeBoard._givenTile == olc::vi2d{ tileX, tileY });
+				CHECK(fakeBoard._givenTile == olc::vi2d{ std::min(tileX, fakeBoard._dimensions.x - 1), std::min(tileY, fakeBoard._dimensions.y - 1) });
 			}
 		}
 	}
