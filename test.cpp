@@ -16,6 +16,6 @@ int main(int argc, char** argv)
 	if (dtcontext.shouldExit()) // important - query flags (and --exit) rely on the user doing this
 		return dtresult;		// propagate the result of the tests
 
+	return dtresult;
 	// End Doctest Testing
-
 }
