@@ -80,11 +80,15 @@ bool BoardButton::isPressed(olc::v2d_generic<int> mousePosition)
 }
 olc::v2d_generic<int> BoardButton::getClickedTile(olc::v2d_generic<int> boardDimensions)
 {
-    int tileX = (_clickedPosition.x - getPosition().x) / (getDimensions().x / boardDimensions.x);
-    int tileY = (_clickedPosition.y - getPosition().y) / (getDimensions().y / boardDimensions.y);
-    tileX = std::min(tileX, boardDimensions.x - 1);
-    tileY = std::min(tileY, boardDimensions.y - 1);
-    return { tileX, tileY };
+    auto internalOffsets = olc::vf2d();
+    if (getBorderDecal() != nullptr)
+        internalOffsets = getInternalClickableOffsets();
+
+    int tileIndexX = (_clickedPosition.x - getPosition().x - internalOffsets.x) / ((getDimensions().x - internalOffsets.x * 2.0f) / boardDimensions.x);
+    int tileIndexY = (_clickedPosition.y - getPosition().y - internalOffsets.y) / ((getDimensions().y - internalOffsets.y * 2.0f) / boardDimensions.y);
+    tileIndexX = std::min(tileIndexX, boardDimensions.x - 1);
+    tileIndexY = std::min(tileIndexY, boardDimensions.y - 1);
+    return { tileIndexX, tileIndexY };
 }
 olc::v2d_generic<int> BoardButton::getClickedTile()
 {
@@ -92,7 +96,7 @@ olc::v2d_generic<int> BoardButton::getClickedTile()
     auto clickedTile = getClickedTile({ int(getBoard()->size()), int(getBoard()[0].size()) });
     (*_gameBoard)[clickedTile.y][clickedTile.x] = ((*_gameBoard)[clickedTile.y][clickedTile.x] + 1) % 3;
 
-        return clickedTile;
+    return clickedTile;
 }
 
 void BoardButton::setBorderDecal(olc::Decal* borderDecal)

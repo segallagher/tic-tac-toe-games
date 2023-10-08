@@ -164,9 +164,15 @@ void Button::centerVertically(olc::PixelGameEngine* gfx)
 	centerVertically(gfx->GetScreenSize().y);
 }
 
+// Alignment
+
 void Button::alignTopRight(olc::v2d_generic<int> screenSize)
 {
 	setPosition({ screenSize.x - getDimensions().x - 1, 0 });
+}
+void Button::alignTopRight(olc::PixelGameEngine* gfx)
+{
+	alignTopRight(gfx->GetScreenSize());
 }
 void Button::alignTopLeft()
 {
@@ -176,9 +182,17 @@ void Button::alignBottomRight(olc::v2d_generic<int> screenSize)
 {
 	setPosition({ screenSize.x - getDimensions().x - 1, screenSize.y - getDimensions().y - 1 });
 }
+void Button::alignBottomRight(olc::PixelGameEngine* gfx)
+{
+	alignBottomRight(gfx->GetScreenSize());
+}
 void Button::alignBottomLeft(olc::v2d_generic<int> screenSize)
 {
 	setPosition({ 0, screenSize.y - getDimensions().y - 1});
+}
+void Button::alignBottomLeft(olc::PixelGameEngine* gfx)
+{
+	alignBottomLeft(gfx->GetScreenSize());
 }
 
 
