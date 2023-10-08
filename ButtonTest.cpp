@@ -144,60 +144,112 @@ TEST_CASE("Button Clicking")
 	auto callback = [&clickRecieved] {clickRecieved = true; };
 	button.setCallback(callback);
 
-	// Is position within
-	for (int y = 0; y < position.y + dimensions.y + 5; y++)
+	SUBCASE("Is position within")
 	{
-		for (int x = 0; x < position.x + dimensions.x + 5; x++)
+		for (int y = 0; y < position.y + dimensions.y + 5; y++)
 		{
-			INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
-			bool result = button.isPositionWithin({ x, y });
+			for (int x = 0; x < position.x + dimensions.x + 5; x++)
+			{
+				INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
+				bool result = button.isPositionWithin({ x, y });
 
-			if(x >= position.x && x <= position.x + dimensions.x &&
-				y >= position.y && y <= position.y + dimensions.y)
-				CHECK(result == true);
-			else
-				CHECK(result == false);
+				if (x >= position.x && x <= position.x + dimensions.x &&
+					y >= position.y && y <= position.y + dimensions.y)
+					CHECK(result == true);
+				else
+					CHECK(result == false);
+			}
+		}
+	}
+	SUBCASE("Is position within overload")
+	{
+		for (int y = 0; y < position.y + dimensions.y + 5; y++)
+		{
+			for (int x = 0; x < position.x + dimensions.x + 5; x++)
+			{
+				INFO("Is position: (" << olc::vi2d{ x, y } << ") within the lower right button area");
+				bool result = button.isPositionWithin({ x, y }, button.getDimensions() / 2, button.getDimensions() / 2);
+
+				int startX = position.x + dimensions.x / 2;
+				int startY = position.y + dimensions.y / 2;
+				if (x >= startX && x <= startX + dimensions.x / 2 &&
+					y >= startY && y <= startY + dimensions.y / 2)
+					CHECK(result == true);
+				else
+					CHECK(result == false);
+			}
 		}
 	}
 
-	// Is pressed
-	for (int y = 0; y < position.y + dimensions.y + 5; y++)
+	SUBCASE("Is pressed")
 	{
-		for (int x = 0; x < position.x + dimensions.x + 5; x++)
+		for (int y = 0; y < position.y + dimensions.y + 5; y++)
 		{
-			INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
-			clickRecieved = false;
-			bool result = button.isPressed({ x, y });
+			for (int x = 0; x < position.x + dimensions.x + 5; x++)
+			{
+				INFO("Is position: (" << olc::vi2d{ x, y } << ") within the button area");
+				clickRecieved = false;
+				bool result = button.isPressed({ x, y });
 
-			if (x >= position.x && x <= position.x + dimensions.x &&
-				y >= position.y && y <= position.y + dimensions.y)
-				CHECK(clickRecieved == true);
-			else
-				CHECK(clickRecieved == false);
+				if (x >= position.x && x <= position.x + dimensions.x &&
+					y >= position.y && y <= position.y + dimensions.y)
+					CHECK(clickRecieved == true);
+				else
+					CHECK(clickRecieved == false);
+			}
+		}
+	}
+	SUBCASE("Is pressed overload")
+	{
+		for (int y = 0; y < position.y + dimensions.y + 5; y++)
+		{
+			for (int x = 0; x < position.x + dimensions.x + 5; x++)
+			{
+				INFO("Is position: (" << olc::vi2d{ x, y } << ") within the upper left outside button area");
+				clickRecieved = false;
+				// It should be like this:
+				//  here
+				//		[button]
+				//
+				bool result = button.isPressed({ x, y }, button.getDimensions() / 2, -button.getDimensions() / 2);
+
+				int startX = position.x - dimensions.x / 2;
+				int startY = position.y - dimensions.y / 2;
+				if (x >= startX && x <= startX + dimensions.x / 2 &&
+					y >= startY && y <= startY + dimensions.y / 2)
+					CHECK(clickRecieved == true);
+				else
+					CHECK(clickRecieved == false);
+			}
 		}
 	}
 
-	// Test setActive and isActive
-	button.setActive(false);
-	CHECK(button.isActive() == false);
-	clickRecieved = false;
-	bool result = button.isPressed({ position.x + dimensions.x / 2, position.y + dimensions.y / 2 });
-	INFO("isActive is set to false");
-	CHECK(clickRecieved == false);
-	
-	button.setActive(true);
-	CHECK(button.isActive() == true);
-	clickRecieved = false;
-	result = button.isPressed({ position.x + dimensions.x / 2, position.y + dimensions.y / 2 });
-	INFO("isActive is set to true");
-	CHECK(clickRecieved == true);
+	SUBCASE("setActive and isActive")
+	{
+		// Test setActive and isActive
+		button.setActive(false);
+		CHECK(button.isActive() == false);
+		clickRecieved = false;
+		bool result = button.isPressed({ position.x + dimensions.x / 2, position.y + dimensions.y / 2 });
+		INFO("isActive is set to false");
+		CHECK(clickRecieved == false);
 
+		button.setActive(true);
+		CHECK(button.isActive() == true);
+		clickRecieved = false;
+		result = button.isPressed({ position.x + dimensions.x / 2, position.y + dimensions.y / 2 });
+		INFO("isActive is set to true");
+		CHECK(clickRecieved == true);
+	}
 
-	// Test setHidden and isHidden
-	button.setHidden(false);
-	CHECK(button.isHidden() == false);
-	button.setHidden(true);
-	CHECK(button.isHidden() == true);
+	SUBCASE("SetHidden")
+	{
+		// Test setHidden and isHidden
+		button.setHidden(false);
+		CHECK(button.isHidden() == false);
+		button.setHidden(true);
+		CHECK(button.isHidden() == true);
+	}
 }
 
 TEST_CASE("Set Decal Scale")

@@ -73,7 +73,7 @@ void TicTacToeGame::buttonSetup()
 			boardButton->setTileDecal(_boardTileBackground.Decal());
 			boardButton->setODecal(_boardOTile.Decal());
 			boardButton->setXDecal(_boardXTile.Decal());
-			boardButton->center(GetScreenSize());
+			boardButton->center(this);
 
 			// Top left position
 			boardButton->setPosition(
@@ -111,7 +111,7 @@ void TicTacToeGame::buttonSetup()
 	// Request dimensions input
 	Button buttonSetBoardDimensions({ 0, 0 }, { 20, 20 });
 	buttonSetBoardDimensions.setDecal(_boardTileBackground.Decal());
-	buttonSetBoardDimensions.alignTopRight(GetScreenSize());
+	buttonSetBoardDimensions.alignTopRight(this);
 	buttonSetBoardDimensions.setCallback([&]
 		{
 			int inX = 0;
@@ -149,7 +149,7 @@ void TicTacToeGame::buttonSetup()
 	// Board randomizer
 	Button buttonBoardRandomizer({ 0, 0 }, { 20, 20 });
 	buttonSetBoardDimensions.setDecal(_boardOTile.Decal());
-	buttonBoardRandomizer.alignTopRight(GetScreenSize());
+	buttonBoardRandomizer.alignTopRight(this);
 	buttonBoardRandomizer.setPosition(buttonBoardRandomizer.getPosition() + olc::vi2d(0, 25));
 	buttonBoardRandomizer.setCallback([&]
 		{
