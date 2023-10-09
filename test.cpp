@@ -1,3 +1,7 @@
+// test.cpp
+// Samuel Gallagher
+// 2023-10-01
+// Runs doctest test
 
 #include "TicTacToeGame.h"
 
