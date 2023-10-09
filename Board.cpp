@@ -38,6 +38,9 @@ bool Board::attemptPlaceTile(int x, int y)
 		if (x >= 0 && x < getBoardDimensions().x &&
 			y >= 0 && y < getBoardDimensions().y)
 		{
+			if (_board[y][x]._value != TileType::Empty)
+				return false;
+
 			_board[y][x]._value = getCurrentTileType();
 			cycleTileType();
 			return true;

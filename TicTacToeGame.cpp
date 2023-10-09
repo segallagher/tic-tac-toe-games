@@ -104,7 +104,9 @@ void TicTacToeGame::buttonSetup()
 
 			auto buttonPtr = _buttons.back().get();
 			(dynamic_cast<BoardButton*>(buttonPtr))->setBoard(_board.getUnderlyingBoard()[y][x]._board.get());
-			auto boardButtonCallback = [buttonPtr] {std::cout << (dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile() << std::endl; };
+			auto boardButtonCallback = [buttonPtr] {
+				(dynamic_cast<BoardButton*>(buttonPtr))->getBoard()->attemptPlaceTile((dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile());
+				};
 			_buttons.back()->setCallback(boardButtonCallback);
 		}
 	}
@@ -123,34 +125,19 @@ void TicTacToeGame::buttonSetup()
 			std::cout << "y = ";
 			std::cin >> inY;
 
-			_board = Board({ inX, inY });
+			auto superBoardDimensions = _board.getBoardDimensions();
+			for (size_t y = 0; y < superBoardDimensions.y; y++)
+			{
+				for (size_t x = 0; x < superBoardDimensions.x; x++)
+				{
+					_board.getUnderlyingBoard()[y][x]._board->setBoardDimensions({ inX, inY });
+					_board.getUnderlyingBoard()[y][x]._value = Board::TileType::Empty;
+				}
+			}
 
 			std::cout << "Board resized" << std::endl;
 		});
 	_buttons.push_back(std::make_unique<Button>(buttonSetBoardDimensions));
-
-	//// Board randomizer
-	//Button buttonBoardRandomizer({ 0, 0 }, { 20, 20 });
-	//buttonSetBoardDimensions.setDecal(_boardOTile.Decal());
-	//buttonBoardRandomizer.alignTopRight(this);
-	//buttonBoardRandomizer.setPosition(buttonBoardRandomizer.getPosition() + olc::vi2d(0, 25));
-	//buttonBoardRandomizer.setCallback([&]
-	//	{
-	//		if (_useBigBoard)
-	//			for (size_t z = 0; z < _testBoardBig.size(); z++)
-	//				for (size_t y = 0; y < _testBoardBig[0].size(); y++)
-	//					for (size_t x = 0; x < _testBoardBig[0][0].size(); x++)
-	//						_testBoardBig[z][y][x] = rand() % 3;
-	//		else
-	//		{
-	//			for (size_t y = 0; y < _testBoard.size(); y++)
-	//				for (size_t x = 0; x < _testBoard[0].size(); x++)
-	//					_testBoard[y][x] = rand() % 3;
-	//		}
-
-	//		std::cout << "Board Randomized!" << std::endl;
-	//	});
-	//_buttons.push_back(std::make_unique<Button>(buttonBoardRandomizer));
 
 	// Outputs the number of buttons
 	std::cout << "[DEbug]: Button count: " << _buttons.size() << std::endl;

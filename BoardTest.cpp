@@ -42,6 +42,8 @@ TEST_CASE("Tile Set/Get")
 
 	board.setCurrentTileType(Board::TileType::O);
 	board.attemptPlaceTile(0, 0);
+	board.setCurrentTileType(Board::TileType::X);
+	board.attemptPlaceTile(0, 0);
 	REQUIRE(board.getTile(0, 0) != nullptr);
 	CHECK(board.getTile(0, 0)->_value == tile);
 
