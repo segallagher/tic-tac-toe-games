@@ -16,7 +16,7 @@ enum GameMode
 	nRow
 };
 
-// Remove
+// Remove if defined elsewhere
 enum TileType
 {
 	Empty,
@@ -25,9 +25,20 @@ enum TileType
 	X
 };
 
-
+/// <summary>
+/// checks if a board satisfies a win condition
+/// </summary>
+/// <param name="ruleset"> enum value from GameMode to choose rules </param>
+/// <param name="board"> full board of tic-tac-toe </param>
+/// <returns> true if win, false otherwise </returns>
 bool score(GameMode ruleset, std::vector<std::vector<TileType>> board);
 
+/// <summary>
+/// score using the nRow rules
+/// </summary>
+/// <param name="board"> full tic-tac-toe board </param>
+/// <param name="length"> length of continuous tileType needed to win </param>
+/// <returns> true if win, false otherwise </returns>
 bool _nRow(std::vector<std::vector<TileType>> board, int length);
 
 /// <summary>
