@@ -132,6 +132,8 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="ButtonTest.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Rules.cpp" />
+    <ClCompile Include="RulesTest.cpp" />
     <ClCompile Include="TicTacToeGame.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -139,6 +141,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="doctest.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
+    <ClInclude Include="Rules.h" />
     <ClInclude Include="TicTacToeGame.h" />
   </ItemGroup>
   <ItemGroup>
