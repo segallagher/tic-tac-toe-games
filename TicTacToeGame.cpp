@@ -24,7 +24,8 @@ bool TicTacToeGame::OnUserCreate()
 	// Called once at the start, so create things here
 	loadSprites();
 
-	bigBoardSetup({ 3,3 }, { 3,3 });
+	//ultimateBoardSetup();
+	regularBoardSetup();
 	buttonSetup();
 
 	return true;
@@ -60,9 +61,8 @@ void TicTacToeGame::loadSprites()
 	_boardXTile.Load("./Sprites/XTile.png");
 }
 
-void TicTacToeGame::bigBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
+void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
 {
-	// Board of (value and board of (value and board of int that is nullptr))
 	_board.setBoardDimensions(bigBoardDimensions);
 	for (size_t y = 0; y < _board.getBoardDimensions().y; y++)
 	{
@@ -72,46 +72,80 @@ void TicTacToeGame::bigBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc:
 			_board.getUnderlyingBoard()[y][x]._board = std::move(smallBoard);
 		}
 	}
+	boardButtonSetup();
+}
+void TicTacToeGame::regularBoardSetup(olc::v2d_generic<int> boardDimensions)
+{
+	_board.setBoardDimensions(boardDimensions);
+	boardButtonSetup();
+}
+
+void TicTacToeGame::boardButtonSetup()
+{
+	_boardButtons.clear();
+
+	auto boardButtonSetup = [&](BoardButton* boardButtonPtr, olc::vi2d dimensions, Board* board) {
+		boardButtonPtr->setDimensions(dimensions);
+		boardButtonPtr->setDecal(_boardBorder.Decal());
+		boardButtonPtr->setTileDecal(_boardTileBackground.Decal());
+		boardButtonPtr->setODecal(_boardOTile.Decal());
+		boardButtonPtr->setXDecal(_boardXTile.Decal());
+		boardButtonPtr->center(this);
+
+		boardButtonPtr->setBoard(board);
+		auto boardButtonCallback = [boardButtonPtr] {
+			boardButtonPtr->getBoard()->attemptPlaceTile(boardButtonPtr->getClickedTile());
+			};
+		boardButtonPtr->setCallback(boardButtonCallback);
+		};
+	// Board display
+	auto superBoardDimensions = _board.getBoardDimensions();
+	if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
+	{
+		std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
+		_boardButtons.push_back(std::move(boardButton));
+		auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
+
+		auto boardScale = olc::vi2d(GetScreenSize().x * 700 / 1000, GetScreenSize().y * 700 / 1000);
+		boardButtonSetup(boardButtonPtr, boardScale, &_board);
+	}
+	else
+	{
+		for (int y = 0; y < superBoardDimensions.y; y++)
+		{
+			for (int x = 0; x < superBoardDimensions.x; x++)
+			{
+				std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
+				_boardButtons.push_back(std::move(boardButton));
+				auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
+
+				auto boardScale = olc::vi2d(GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000);
+				boardButtonSetup(boardButtonPtr, boardScale, _board.getUnderlyingBoard()[y][x]._board.get());
+
+				// Top left position
+				boardButtonPtr->setPosition(
+					boardButtonPtr->getPosition() - olc::vi2d(
+						boardButtonPtr->getDimensions().x,
+						boardButtonPtr->getDimensions().y));
+
+				// Offset into correct position
+				boardButtonPtr->setPosition(
+					boardButtonPtr->getPosition() + olc::vi2d(
+						boardButtonPtr->getDimensions().x * x,
+						boardButtonPtr->getDimensions().y * y));
+			}
+		}
+	}
+
+	// Outputs the number of buttons
+	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
 }
 
 void TicTacToeGame::buttonSetup()
 {
-	// Board display
-	auto superBoardDimensions = _board.getBoardDimensions();
-	for (size_t y = 0; y < superBoardDimensions.y; y++)
-	{
-		for (size_t x = 0; x < superBoardDimensions.x; x++)
-		{
-			std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
-			boardButton->setDimensions({ GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000 });
-			boardButton->setDecal(_boardBorder.Decal());
-			boardButton->setTileDecal(_boardTileBackground.Decal());
-			boardButton->setODecal(_boardOTile.Decal());
-			boardButton->setXDecal(_boardXTile.Decal());
-			boardButton->center(this);
+	_regularButtons.clear();
 
-			// Top left position
-			boardButton->setPosition(
-				boardButton->getPosition() - olc::vi2d(
-					boardButton->getDimensions().x,
-					boardButton->getDimensions().y));
-			boardButton->setPosition(
-				boardButton->getPosition() + olc::vi2d(
-					boardButton->getDimensions().x * x,
-					boardButton->getDimensions().y * y));
-
-			_buttons.push_back(std::move(boardButton));
-
-			auto buttonPtr = _buttons.back().get();
-			(dynamic_cast<BoardButton*>(buttonPtr))->setBoard(_board.getUnderlyingBoard()[y][x]._board.get());
-			auto boardButtonCallback = [buttonPtr] {
-				(dynamic_cast<BoardButton*>(buttonPtr))->getBoard()->attemptPlaceTile((dynamic_cast<BoardButton*>(buttonPtr))->getClickedTile());
-				};
-			_buttons.back()->setCallback(boardButtonCallback);
-		}
-	}
-
-	// Request dimensions input
+	// Request dimensions input button
 	Button buttonSetBoardDimensions({ 0, 0 }, { 20, 20 });
 	buttonSetBoardDimensions.setDecal(_boardTileBackground.Decal());
 	buttonSetBoardDimensions.alignTopRight(this);
@@ -125,26 +159,61 @@ void TicTacToeGame::buttonSetup()
 			std::cout << "y = ";
 			std::cin >> inY;
 
-			auto superBoardDimensions = _board.getBoardDimensions();
-			for (size_t y = 0; y < superBoardDimensions.y; y++)
+			if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
 			{
-				for (size_t x = 0; x < superBoardDimensions.x; x++)
+				_board.setBoardDimensions({ inX, inY });
+			}
+			else
+			{
+				auto superBoardDimensions = _board.getBoardDimensions();
+				for (size_t y = 0; y < superBoardDimensions.y; y++)
 				{
-					_board.getUnderlyingBoard()[y][x]._board->setBoardDimensions({ inX, inY });
-					_board.getUnderlyingBoard()[y][x]._value = Board::TileType::Empty;
+					for (size_t x = 0; x < superBoardDimensions.x; x++)
+					{
+						_board.getUnderlyingBoard()[y][x]._board->setBoardDimensions({ inX, inY });
+						_board.getUnderlyingBoard()[y][x]._value = Board::TileType::Empty;
+					}
 				}
 			}
-
 			std::cout << "Board resized" << std::endl;
 		});
-	_buttons.push_back(std::make_unique<Button>(buttonSetBoardDimensions));
+	_regularButtons.push_back(std::make_unique<Button>(buttonSetBoardDimensions));
+
+	// Change board type
+	Button buttonSwapBoardType({ 0, 0 }, { 20, 20 });
+	buttonSwapBoardType.setDecal(_boardXTile.Decal());
+	buttonSwapBoardType.alignTopRight(this);
+	buttonSwapBoardType.setPosition(buttonSwapBoardType.getPosition() + olc::vi2d(0, 25));
+	buttonSwapBoardType.setCallback([&]
+		{			
+			// If a small board
+			if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
+			{
+				// Set big board
+				ultimateBoardSetup();
+				std::cout << "Switched to Ultimate!:" << std::endl;
+			}
+			else
+			{
+				// Set small board
+				regularBoardSetup();
+				std::cout << "Switched to Regular!:" << std::endl;
+			}
+		});
+	_regularButtons.push_back(std::make_unique<Button>(buttonSwapBoardType));
+
 
 	// Outputs the number of buttons
-	std::cout << "[DEbug]: Button count: " << _buttons.size() << std::endl;
+	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
 }
 void TicTacToeGame::drawButtons()
 {
-	for (auto& button : _buttons)
+	for (auto& button : _regularButtons)
+	{
+		if (button->isHidden() == false)
+			button->drawSelf(this);
+	}
+	for (auto& button : _boardButtons)
 	{
 		if (button->isHidden() == false)
 			button->drawSelf(this);
@@ -153,10 +222,18 @@ void TicTacToeGame::drawButtons()
 void TicTacToeGame::checkButtons()
 {
 	if (GetMouse(0).bReleased)
-		for (auto& button : _buttons)
+	{
+		for (auto& button : _regularButtons)
 		{
 			if (button->isActive())
 				if (button->isPressed(GetMousePos()))
 					_redrawScreen = true;
 		}
+		for (auto& button : _boardButtons)
+		{
+			if (button->isActive())
+				if (button->isPressed(GetMousePos()))
+					_redrawScreen = true;
+		}
+	}
 }
