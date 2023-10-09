@@ -9,6 +9,7 @@
 #include "olcPixelGameEngine.h"
 #include "Button.h"
 #include "BoardButton.h"
+#include "board.h"
 #include <utility>
 
 class TicTacToeGame : public olc::PixelGameEngine
@@ -23,6 +24,8 @@ public:
 	void drawing();
 	void loadSprites();
 
+	void bigBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions);
+
 	// Buttons
 	void buttonSetup();
 	void drawButtons();
@@ -36,18 +39,7 @@ public:
 	olc::Renderable _boardOTile;
 	olc::Renderable _boardXTile;
 
-	// Testing board
-	bool _useBigBoard = true;
-	std::vector<std::vector<int>> _testBoard = {
-		{ 1, 2, 1 },
-		{ 1, 2, 0 },
-		{ 1, 0, 2 }
-	};
-	std::vector<std::vector<std::vector<int>>> _testBoardBig = {
-		{{1}}, {{2}}, {{1}},
-		{{1}}, {{2}}, {{0}},
-		{{1}}, {{0}}, {{2}}
-	};
+	Board _board;
 };
 
 #endif // !TicTacToeGame_HPP

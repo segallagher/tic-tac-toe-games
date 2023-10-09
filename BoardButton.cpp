@@ -26,8 +26,13 @@ BoardButton::BoardButton(olc::v2d_generic<int> position, olc::Decal& tileDecal, 
 void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
 {
     // Parameter setting
-    auto height = _gameBoard->size();
-    auto width = (*_gameBoard)[0].size();
+    auto width = 1;
+    auto height = 1;
+    if (_gameBoard != nullptr)
+    {
+        width = _gameBoard->getBoardDimensions().x;
+        height = _gameBoard->getBoardDimensions().y;
+    }
     auto internalOffsets = getInternalClickableOffsets();
     auto tileSize = getTileSize(width, height, internalOffsets);
 
@@ -46,25 +51,30 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
     attemptDrawDecal(gfx, getBorderDecal(), getPosition(), getDimensions(), getDecalScale(), olc::DARK_GREY);
 
     // Top tiles
-    for (size_t y = 0; y < height; y++)
-        for (size_t x = 0; x < width; x++)
-        {
-            if ((*_gameBoard)[y][x] == 0) // No tile
-                continue;
-            else
+    if (_gameBoard != nullptr)
+    {
+        for (size_t y = 0; y < height; y++)
+            for (size_t x = 0; x < width; x++)
             {
-                olc::Decal* decal = getODecal();
-                if ((*_gameBoard)[y][x] == 2)
-                    decal = getXDecal();
+                if (_gameBoard->getTile(x, y)->_value == Board::TileType::Empty) // No tile
+                    continue;
+                else
+                {
+                    olc::Decal* decal = getODecal();
+                    if (_gameBoard->getTile(x, y)->_value == Board::TileType::X)
+                        decal = getXDecal();
 
-                attemptDrawDecal(
-                    gfx,
-                    decal,
-                    getTilePosition(tileSize, internalOffsets, x, y),
-                    tileSize,
-                    getTileScale(tileSize, decal->sprite->Size()));
+                    attemptDrawDecal(
+                        gfx,
+                        decal,
+                        getTilePosition(tileSize, internalOffsets, x, y),
+                        tileSize,
+                        getTileScale(tileSize, decal->sprite->Size()));
+                }
             }
-        }
+    }
+    else
+        std::cout << "[ERROR: Board pointer is null]" << std::endl;
 }
 bool BoardButton::isPressed(olc::v2d_generic<int> mousePosition)
 {
@@ -92,11 +102,7 @@ olc::v2d_generic<int> BoardButton::getClickedTile(olc::v2d_generic<int> boardDim
 }
 olc::v2d_generic<int> BoardButton::getClickedTile()
 {
-    std::cout << "[DEMO CODE]: getClickedTile() cycles the clicked tile." << std::endl;
-    auto clickedTile = getClickedTile({ int(getBoard()->size()), int(getBoard()[0].size()) });
-    (*_gameBoard)[clickedTile.y][clickedTile.x] = ((*_gameBoard)[clickedTile.y][clickedTile.x] + 1) % 3;
-
-    return clickedTile;
+    return getClickedTile(getBoard()->getBoardDimensions());
 }
 
 void BoardButton::setBorderDecal(olc::Decal* borderDecal)
@@ -135,13 +141,11 @@ olc::Decal* BoardButton::getXDecal()
     return _xDecal;
 }
 
-void BoardButton::setBoard(std::vector<std::vector<int>>* board)
+void BoardButton::setBoard(Board* board)
 {
     _gameBoard = board;
-    //setCallback([&][&fakeBoard, &boardButton]{ fakeBoard.setTile(boardButton.getClickedTile(fakeBoard.getDimensions())); };)
-    std::cout << "[Debug]: BoardButton requires a reference or pointer to the board and a CALLBACK to be set." << std::endl;
 }
-std::vector<std::vector<int>>* BoardButton::getBoard()
+Board* BoardButton::getBoard()
 {
     return _gameBoard;
 }
