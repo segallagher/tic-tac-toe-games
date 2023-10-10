@@ -236,6 +236,14 @@ void Board::setParentTileState(TileType state)
 void Board::setRuleset(GameMode ruleset)
 {
 	_ruleset = ruleset;
+	for (auto& y : _board)
+	{
+		for (auto& x : y)
+		{
+			if(x.getChildBoard() != nullptr)
+				x.getChildBoard()->setRuleset(getRuleset());
+		}
+	}
 }
 GameMode Board::getRuleset()
 {

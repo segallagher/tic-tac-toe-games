@@ -128,7 +128,7 @@ public:
 	// Other
 	// ###############################
 
-	// Sets the board's used ruleset
+	// Sets the board's used ruleset and sets every child board's ruleset to the same given ruleset
 	void setRuleset(GameMode ruleset);
 	// Gets the board's ruleset
 	GameMode getRuleset();
