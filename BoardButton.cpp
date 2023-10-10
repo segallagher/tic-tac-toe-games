@@ -37,8 +37,8 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
     auto tileSize = getTileSize(width, height, internalOffsets);
 
     // TileBackground
-    for (size_t y = 0; y < height; y++)
-        for (size_t x = 0; x < width; x++)
+    for (int y = 0; y < height; y++)
+        for (int x = 0; x < width; x++)
             attemptDrawDecal(
                 gfx,
                 getTileDecal(),
@@ -53,15 +53,15 @@ void BoardButton::drawSelf(olc::PixelGameEngine* gfx)
     // Top tiles
     if (_gameBoard != nullptr)
     {
-        for (size_t y = 0; y < height; y++)
-            for (size_t x = 0; x < width; x++)
+        for (int y = 0; y < height; y++)
+            for (int x = 0; x < width; x++)
             {
-                if (_gameBoard->getTile(x, y)->_value == Board::TileType::Empty) // No tile
+                if (_gameBoard->getTile(x, y)->getState() == TileType::Empty) // No tile
                     continue;
                 else
                 {
                     olc::Decal* decal = getODecal();
-                    if (_gameBoard->getTile(x, y)->_value == Board::TileType::X)
+                    if (_gameBoard->getTile(x, y)->getState() == TileType::X)
                         decal = getXDecal();
 
                     attemptDrawDecal(

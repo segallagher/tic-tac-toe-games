@@ -6,7 +6,7 @@
 #include "board.h"
 
 int Board::_turn = 0;
-Board::TileType Board::_currentTileType = TileType::O;
+TileType Board::_currentTileType = TileType::O;
 
 // ###########################################################################################################################
 // Constructors
@@ -29,20 +29,68 @@ Board::~Board()
 // Member functions
 // ###########################################################################################################################
 
+void Board::evaluateBoard()
+{
+	if (this == nullptr || isActive() == false)
+		return;
+
+	std::cout << "Scoring check here: Board.scoreBoard" << std::endl;
+	
+	bool scoring = true;
+
+	for (int y = 0; y < getBoardDimensions().y; y++)
+	{
+		for (int x = 0; x < getBoardDimensions().x; x++)
+		{
+			auto tileState = getTile(x, y)->getState();
+			if (tileState == TileType::Empty ||
+				tileState == TileType::GameInProgress)
+			{
+				scoring = false;
+			}
+		}
+	}
+
+	// Need: -> ruleset
+	// Have: getBoardTilesAsTileType()
+	
+	if (scoring && _setSingleOnGameWon)
+	{
+		auto winnerTile = TileType::Empty;
+		if (scoring)
+			winnerTile = TileType::O;
+		else
+			winnerTile = TileType::X;
+
+		setParentTileState(winnerTile);
+		setBoardToSingleTile(winnerTile);
+		setActive(false);
+	}
+}
+
 bool Board::attemptPlaceTile(int x, int y)
 {
-	if (_isBoardOfBoards)
+	if (isActive() == false)
 		return false;
-	else
+
+	if (x >= 0 && x < getBoardDimensions().x &&
+		y >= 0 && y < getBoardDimensions().y)
 	{
-		if (x >= 0 && x < getBoardDimensions().x &&
-			y >= 0 && y < getBoardDimensions().y)
+		if (_board[y][x].getChildBoard() != nullptr)
+			return false;
+		else
 		{
-			if (_board[y][x]._value != TileType::Empty)
+			// Current tile
+			if (_board[y][x].getState() != TileType::Empty)
 				return false;
 
-			_board[y][x]._value = getCurrentTileType();
+			_board[y][x].setState(getCurrentTileType());
 			cycleTileType();
+
+			// Parent tile
+			if(getParentTile() != nullptr && getParentTile()->getState() == TileType::Empty)
+				getParentTile()->setState(TileType::GameInProgress);
+
 			return true;
 		}
 	}
@@ -69,18 +117,24 @@ Board::Tile* Board::getTile(olc::v2d_generic<int> position)
 	return getTile(position.x, position.y);
 }
 
-void Board::setIsBoardOfBoards(bool isBoardOfBoards)
+std::vector<std::vector<TileType>> Board::getBoardTilesAsTileType()
 {
-	_isBoardOfBoards = isBoardOfBoards;
-}
-bool Board::isBoardOfBoards()
-{
-	return _isBoardOfBoards;
+	auto board_checkFormat = std::vector<std::vector<TileType>>(getBoardDimensions().y);
+	for (int y = 0; y < getBoardDimensions().y; y++)
+	{
+		board_checkFormat[y] = std::vector<TileType>(getBoardDimensions().x);
+		for (int x = 0; x < getBoardDimensions().x; x++)
+		{
+			board_checkFormat[y][x] = getTile(x, y)->getState();
+		}
+	}
+	return board_checkFormat;
 }
 
-void Board::setBoardToSingleTile()
+void Board::setBoardToSingleTile(TileType displayTile)
 {
 	setBoardDimensions({ 1, 1 });
+	_board[0][0].setState(displayTile, false);
 }
 void Board::setBoardToSingleOnGameWin(bool setSingleOnGameWon)
 {
@@ -89,9 +143,9 @@ void Board::setBoardToSingleOnGameWin(bool setSingleOnGameWon)
 
 olc::v2d_generic<int> Board::getBoardDimensions()
 {
-	auto size = olc::v2d_generic<int>(0, _board.size());
+	auto size = olc::v2d_generic<int>(0, int(_board.size()));
 	if (size.y > 0)
-		size.x = _board[0].size();
+		size.x = int(_board[0].size());
 	return size;
 }
 void Board::setBoardDimensions(olc::v2d_generic<int> dimensions)
@@ -100,12 +154,19 @@ void Board::setBoardDimensions(olc::v2d_generic<int> dimensions)
 	_board = std::vector<std::vector<Tile>>(dimensions.y);
 	for (size_t i = 0; i < _board.size(); i++)
 	{
-		_board[i] = std::vector<Tile>(dimensions.x);
+		_board[i] = std::vector<Tile>(dimensions.x, Tile(this));
 	}
 }
 void Board::setUnderlyingBoard(std::vector<std::vector<Tile>> board)
 {
 	_board = board;
+	for (auto& y : _board)
+	{
+		for (auto& x : y) 
+		{
+			x.setParentBoard(this);
+		}
+	}
 }
 std::vector<std::vector<Board::Tile>>& Board::getUnderlyingBoard()
 {
@@ -115,7 +176,7 @@ void Board::resetBoard()
 {
 	for (auto& y : getUnderlyingBoard())
 		for (auto& x : y)
-			x = Tile();
+			x = Tile(this);
 }
 
 void Board::setCurrentTurn(int turn)
@@ -153,7 +214,120 @@ void Board::setCurrentTileType(TileType tile)
 {
 	_currentTileType = tile;
 }
-Board::TileType Board::getCurrentTileType()
+TileType Board::getCurrentTileType()
 {
 	return _currentTileType;
 }
+
+Board::Tile* Board::getParentTile()
+{
+	return _parentTilePtr;
+}
+void Board::setParentTile(Tile* parentTile)
+{
+	_parentTilePtr = parentTile;
+}
+void Board::setParentTileState(TileType state)
+{
+	if (getParentTile() != nullptr)
+		getParentTile()->setState(state);
+}
+
+void Board::setRuleset(GameMode ruleset)
+{
+	_ruleset = ruleset;
+}
+GameMode Board::getRuleset()
+{
+	return _ruleset;
+}
+
+void Board::setActive(bool isActive)
+{
+	_isActive = isActive;
+}
+bool Board::isActive()
+{
+	return _isActive;
+}
+
+// #############################################################################################
+// Board::Tile
+// #############################################################################################
+
+Board::Tile::Tile(Board* parentBoard)
+	: _parentBoard(parentBoard)
+{
+}
+Board::Tile::Tile(const Tile& other)
+{
+	*this = other;
+}
+Board::Tile::~Tile()
+{
+}
+
+Board::Tile& Board::Tile::operator=(const Tile& other)
+{
+	if (this == &other)
+		return *this;
+
+	_state = other._state;
+	_parentBoard = other._parentBoard;
+
+	if (other._childBoard == nullptr)
+	{
+		_childBoard = nullptr;
+	}
+	else
+	{
+		Board board(other._childBoard.get()->getBoardDimensions());
+		board.setUnderlyingBoard(other._childBoard.get()->getUnderlyingBoard());
+		_childBoard = std::make_unique<Board>(board);
+	}
+
+	return *this;
+}
+
+// Functions
+
+TileType Board::Tile::getState()
+{
+	return _state;
+}
+void Board::Tile::setState(TileType state, bool evaluateParentBoard)
+{
+	_state = state;
+	if (evaluateParentBoard &&
+		getState() != TileType::Empty &&
+		getState() != TileType::GameInProgress)
+	{
+		getParentBoard()->evaluateBoard();
+	}
+}
+
+Board* Board::Tile::getParentBoard()
+{
+	return _parentBoard;
+}
+void Board::Tile::setParentBoard(Board* parentBoard)
+{
+	_parentBoard = parentBoard;
+}
+std::unique_ptr<Board>& Board::Tile::getChildBoard()
+{
+	return _childBoard;
+}
+void Board::Tile::setChildBoard(std::unique_ptr<Board>& board)
+{
+	if (board == nullptr)
+	{
+		_childBoard = nullptr;
+	}
+	else
+	{
+		_childBoard = std::move(board);
+		_childBoard->setParentTile(this);
+	}
+}
+

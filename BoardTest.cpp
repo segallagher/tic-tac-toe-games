@@ -11,13 +11,13 @@ std::vector<std::vector<Board::Tile>> getTestTiles()
 {
 	auto newBoard = std::vector<std::vector<Board::Tile>>(3);
 	newBoard[0] = std::vector<Board::Tile>(1);
-	newBoard[0][0]._value = Board::TileType::O;
+	newBoard[0][0].setState(TileType::O);
 	newBoard[1] = std::vector<Board::Tile>(3);
-	newBoard[1][0]._value = Board::TileType::X;
-	newBoard[1][1]._value = Board::TileType::GameInProgress;
-	newBoard[1][2]._value = Board::TileType::Empty;
+	newBoard[1][0].setState(TileType::X);
+	newBoard[1][1].setState(TileType::GameInProgress);
+	newBoard[1][2].setState(TileType::Empty);
 	newBoard[2] = std::vector<Board::Tile>(1);
-	newBoard[2][0]._value = Board::TileType::X;
+	newBoard[2][0].setState(TileType::X);
 	return newBoard;
 }
 
@@ -38,38 +38,38 @@ TEST_CASE("Board Constructors")
 TEST_CASE("Tile Set/Get")
 {
 	Board board;
-	auto tile = board.getCurrentTileType();
+	auto tile = Board::getCurrentTileType();
 
-	board.setCurrentTileType(Board::TileType::O);
+	Board::setCurrentTileType(TileType::O);
 	board.attemptPlaceTile(0, 0);
-	board.setCurrentTileType(Board::TileType::X);
+	Board::setCurrentTileType(TileType::X);
 	board.attemptPlaceTile(0, 0);
 	REQUIRE(board.getTile(0, 0) != nullptr);
-	CHECK(board.getTile(0, 0)->_value == tile);
+	CHECK(board.getTile(0, 0)->getState() == tile);
 
-	auto tile1 = board.getCurrentTileType();
+	auto tile1 = Board::getCurrentTileType();
 	board.attemptPlaceTile(1, 0);
 
-	board.setCurrentTileType(Board::TileType::GameInProgress);
-	auto tile2 = board.getCurrentTileType();
+	Board::setCurrentTileType(TileType::GameInProgress);
+	auto tile2 = Board::getCurrentTileType();
 	board.attemptPlaceTile(1, 1);
 
-	board.setCurrentTileType(Board::TileType::O);
-	auto tile3 = board.getCurrentTileType();
+	Board::setCurrentTileType(TileType::O);
+	auto tile3 = Board::getCurrentTileType();
 	board.attemptPlaceTile(0, 1);
 
 
 	REQUIRE(board.getTile(1, 0) != nullptr);
-	CHECK(board.getTile(1, 0)->_value == tile1);
+	CHECK(board.getTile(1, 0)->getState() == tile1);
 
 	REQUIRE(board.getTile(1, 1) != nullptr);
-	CHECK(board.getTile(1, 1)->_value == tile2);
+	CHECK(board.getTile(1, 1)->getState() == tile2);
 
 	REQUIRE(board.getTile(0, 1) != nullptr);
-	CHECK(board.getTile(0, 1)->_value == tile3);
+	CHECK(board.getTile(0, 1)->getState() == tile3);
 
 	REQUIRE(board.getTile(0, 0) != nullptr);
-	CHECK(board.getTile(0, 0)->_value == tile);
+	CHECK(board.getTile(0, 0)->getState() == tile);
 }
 
 TEST_CASE("Board Dimensions Changing")
@@ -119,8 +119,8 @@ TEST_CASE("Underlying Board Get/Set")
 	{
 		for (auto& x : y)
 		{
-			CHECK(x._value == Board::TileType::Empty);
-			CHECK(x._board == nullptr);
+			CHECK(x.getState() == TileType::Empty);
+			CHECK(x.getChildBoard() == nullptr);
 		}
 	}
 
@@ -134,24 +134,24 @@ TEST_CASE("Underlying Board Get/Set")
 			if (i == 0)
 			{
 				REQUIRE(b[i].size() > 0);
-				CHECK(b[i][0]._value == Board::TileType::O);
-				CHECK(b[i][0]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::O);
+				CHECK(b[i][0].getChildBoard() == nullptr);
 			}
 			else if (i == 1)
 			{
 				REQUIRE(b[i].size() > 2);
-				CHECK(b[i][0]._value == Board::TileType::X);
-				CHECK(b[i][0]._board == nullptr);
-				CHECK(b[i][1]._value == Board::TileType::GameInProgress);
-				CHECK(b[i][1]._board == nullptr);
-				CHECK(b[i][2]._value == Board::TileType::Empty);
-				CHECK(b[i][2]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::X);
+				CHECK(b[i][0].getChildBoard() == nullptr);
+				CHECK(b[i][1].getState() == TileType::GameInProgress);
+				CHECK(b[i][1].getChildBoard() == nullptr);
+				CHECK(b[i][2].getState() == TileType::Empty);
+				CHECK(b[i][2].getChildBoard() == nullptr);
 			}
 			else
 			{
 				REQUIRE(b[i].size() > 0);
-				CHECK(b[i][0]._value == Board::TileType::X);
-				CHECK(b[i][0]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::X);
+				CHECK(b[i][0].getChildBoard() == nullptr);
 			}
 		}
 	}
@@ -166,24 +166,24 @@ TEST_CASE("Underlying Board Get/Set")
 			if (i == 0)
 			{
 				REQUIRE(b[i].size() > 0);
-				CHECK(b[i][0]._value == Board::TileType::Empty);
-				CHECK(b[i][0]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::Empty);
+				CHECK(b[i][0].getChildBoard() == nullptr);
 			}
 			else if (i == 1)
 			{
 				REQUIRE(b[i].size() > 2);
-				CHECK(b[i][0]._value == Board::TileType::Empty);
-				CHECK(b[i][0]._board == nullptr);
-				CHECK(b[i][1]._value == Board::TileType::Empty);
-				CHECK(b[i][1]._board == nullptr);
-				CHECK(b[i][2]._value == Board::TileType::Empty);
-				CHECK(b[i][2]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::Empty);
+				CHECK(b[i][0].getChildBoard() == nullptr);
+				CHECK(b[i][1].getState() == TileType::Empty);
+				CHECK(b[i][1].getChildBoard() == nullptr);
+				CHECK(b[i][2].getState() == TileType::Empty);
+				CHECK(b[i][2].getChildBoard() == nullptr);
 			}
 			else
 			{
 				REQUIRE(b[i].size() > 0);
-				CHECK(b[i][0]._value == Board::TileType::Empty);
-				CHECK(b[i][0]._board == nullptr);
+				CHECK(b[i][0].getState() == TileType::Empty);
+				CHECK(b[i][0].getChildBoard() == nullptr);
 			}
 		}
 	}
@@ -191,24 +191,41 @@ TEST_CASE("Underlying Board Get/Set")
 
 TEST_CASE("Board Turns")
 {
-	Board board;
-	CHECK(board.getCurrentTurn() == 0);
+	CHECK(Board::getCurrentTurn() == 0);
 
-	board.setCurrentTurn(5);
-	CHECK(board.getCurrentTurn() == 5);
+	Board::setCurrentTurn(5);
+	CHECK(Board::getCurrentTurn() == 5);
 
-	board.setCurrentTurn(10000);
-	CHECK(board.getCurrentTurn() == 10000);
+	Board::setCurrentTurn(10000);
+	CHECK(Board::getCurrentTurn() == 10000);
 
-	board.incrementTurn();
-	CHECK(board.getCurrentTurn() == 10001);
+	Board::incrementTurn();
+	CHECK(Board::getCurrentTurn() == 10001);
 
-	board.incrementTurn();
-	CHECK(board.getCurrentTurn() == 10002);
+	Board::incrementTurn();
+	CHECK(Board::getCurrentTurn() == 10002);
 
 	for (size_t i = 0; i < 27; i++)
 	{
-		board.incrementTurn();
+		Board::incrementTurn();
 	}
-	CHECK(board.getCurrentTurn() == 10002 + 27);
+	CHECK(Board::getCurrentTurn() == 10002 + 27);
+}
+
+TEST_CASE("Board Parenting")
+{
+	std::unique_ptr<Board> board = std::make_unique<Board>();
+	Board::Tile tile;
+	CHECK(tile.getChildBoard() == nullptr);
+
+	tile.setChildBoard(board);
+	REQUIRE(tile.getChildBoard() != nullptr);
+	CHECK(tile.getChildBoard()->getParentTile() == &tile);
+}
+
+TEST_CASE("Board Ruleset")
+{
+	Board board;
+	board.setRuleset(GameMode::nRow);
+	CHECK(board.getRuleset() == GameMode::nRow);
 }

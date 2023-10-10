@@ -69,7 +69,7 @@ void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions,
 		for (size_t x = 0; x < _board.getBoardDimensions().x; x++)
 		{
 			std::unique_ptr<Board> smallBoard = std::make_unique<Board>(smallBoardDimensions);
-			_board.getUnderlyingBoard()[y][x]._board = std::move(smallBoard);
+			_board.getUnderlyingBoard()[y][x].setChildBoard(smallBoard);
 		}
 	}
 	boardButtonSetup();
@@ -100,7 +100,7 @@ void TicTacToeGame::boardButtonSetup()
 		};
 	// Board display
 	auto superBoardDimensions = _board.getBoardDimensions();
-	if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
+	if (_board.getUnderlyingBoard()[0][0].getChildBoard() == nullptr)
 	{
 		std::unique_ptr<BoardButton> boardButton = std::make_unique<BoardButton>();
 		_boardButtons.push_back(std::move(boardButton));
@@ -120,7 +120,7 @@ void TicTacToeGame::boardButtonSetup()
 				auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
 
 				auto boardScale = olc::vi2d(GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000);
-				boardButtonSetup(boardButtonPtr, boardScale, _board.getUnderlyingBoard()[y][x]._board.get());
+				boardButtonSetup(boardButtonPtr, boardScale, _board.getUnderlyingBoard()[y][x].getChildBoard().get());
 
 				// Top left position
 				boardButtonPtr->setPosition(
@@ -159,7 +159,7 @@ void TicTacToeGame::buttonSetup()
 			std::cout << "y = ";
 			std::cin >> inY;
 
-			if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
+			if (_board.getUnderlyingBoard()[0][0].getChildBoard() == nullptr)
 			{
 				_board.setBoardDimensions({ inX, inY });
 			}
@@ -170,8 +170,8 @@ void TicTacToeGame::buttonSetup()
 				{
 					for (size_t x = 0; x < superBoardDimensions.x; x++)
 					{
-						_board.getUnderlyingBoard()[y][x]._board->setBoardDimensions({ inX, inY });
-						_board.getUnderlyingBoard()[y][x]._value = Board::TileType::Empty;
+						_board.getUnderlyingBoard()[y][x].getChildBoard()->setBoardDimensions({ inX, inY });
+						_board.getUnderlyingBoard()[y][x].setState(TileType::Empty);
 					}
 				}
 			}
@@ -187,7 +187,7 @@ void TicTacToeGame::buttonSetup()
 	buttonSwapBoardType.setCallback([&]
 		{			
 			// If a small board
-			if (_board.getUnderlyingBoard()[0][0]._board == nullptr)
+			if (_board.getUnderlyingBoard()[0][0].getChildBoard() == nullptr)
 			{
 				// Set big board
 				ultimateBoardSetup();
