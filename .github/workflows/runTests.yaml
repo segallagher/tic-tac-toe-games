@@ -24,6 +24,8 @@ jobs:
               run: | 
                   g++ -o test.exe `
                   test.cpp `
+                  Board.cpp `
+                  BoardTest.cpp `
                   BoardButton.cpp `
                   BoardButtonTest.cpp `
                   Button.cpp `
