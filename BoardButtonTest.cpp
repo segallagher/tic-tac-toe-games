@@ -230,11 +230,9 @@ TEST_CASE("Misc Functions")
 	BoardButton boardButton;
 	SUBCASE("Set and get board")
 	{
-		std::vector<std::vector<int>> board = { {1}, {2}, {3, 2, 1} };
+		Board board({ 5,5 });
 		boardButton.setBoard(&board);
-		CHECK(*boardButton.getBoard() == board);
-		for (size_t i = 0; i < 3; i++)
-			CHECK((*boardButton.getBoard())[i] == board[i]);
+		CHECK(boardButton.getBoard()->getBoardDimensions() == board.getBoardDimensions());
 	}
 
 	SUBCASE("Board border offsets")

@@ -4,6 +4,7 @@
 // Header file for BoardButton (a button that will give an x, y coordinate based on clicked area and internal size).
 
 #include "Button.h"
+#include "Board.h"
 
 #ifndef BOARDBUTTON_HPP
 #define BOARDBUTTON_HPP
@@ -43,9 +44,9 @@ public:
 	olc::Decal* getXDecal();
 
 	// Sets the board used to draw and interact with
-	void setBoard(std::vector<std::vector<int>>* board);
+	void setBoard(Board* board);
 	// Gets the board that has been given to the boardButton
-	std::vector<std::vector<int>>* getBoard();
+	Board* getBoard();
 	// Returns pixel width and height of the border
 	olc::v2d_generic<int> getBorderOffset();
 	// Returns the scaled offset of the tiles from the BoardButton's position based on the given width and height
@@ -78,7 +79,7 @@ protected:
 	olc::v2d_generic<int> _boarderOffset = { 32, 32 };
 
 	// Testing board
-	std::vector<std::vector<int>>* _gameBoard = nullptr;
+	Board* _gameBoard = nullptr;
 };
 
 #endif // !BOARDBUTTON_HPP

@@ -4,6 +4,7 @@
 // The main.cpp file for tic-tac-toe games
 
 #include "TicTacToeGame.h"
+#include "Board.h"
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include "doctest.h"
