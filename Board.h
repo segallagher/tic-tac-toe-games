@@ -3,23 +3,10 @@
 // 2023-10-08
 // Header file for Board (a class that will serve as the board for the game).
 
-#include "TicTacToeGame.h"
+#include "Rules.h"
 
 #ifndef BOARD_HPP
 #define BOARD_HPP
-
-enum GameMode
-{
-	nRow
-};
-
-enum class TileType
-{
-	Empty,
-	GameInProgress,
-	O,
-	X
-};
 
 class Board
 {

@@ -3,8 +3,6 @@
 // 2023-10-08
 // Header file for rules class
 
-#pragma once
-
 #include <vector>
 #include "TicTacToeGame.h"
 #include <iostream>
@@ -16,7 +14,6 @@ enum GameMode
 	nRow
 };
 
-// Remove if defined elsewhere
 enum TileType
 {
 	Empty,
