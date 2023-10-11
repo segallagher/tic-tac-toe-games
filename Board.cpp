@@ -133,6 +133,11 @@ std::vector<std::vector<TileType>> Board::getBoardTilesAsTileType()
 
 void Board::setBoardToSingleTile(TileType displayTile)
 {
+	// Avoid issues with deleting boards that are attatched to BoardButtons
+	auto boardTilePtr = getTile(0, 0);
+	if (boardTilePtr != nullptr && boardTilePtr->getChildBoard() != nullptr)
+		return;
+
 	setBoardDimensions({ 1, 1 });
 	_board[0][0].setState(displayTile, false);
 }
@@ -151,11 +156,7 @@ olc::v2d_generic<int> Board::getBoardDimensions()
 void Board::setBoardDimensions(olc::v2d_generic<int> dimensions)
 {
 	dimensions = olc::v2d_generic<int>(std::max(1, dimensions.x), std::max(1, dimensions.y));
-	_board = std::vector<std::vector<Tile>>(dimensions.y);
-	for (size_t i = 0; i < _board.size(); i++)
-	{
-		_board[i] = std::vector<Tile>(dimensions.x, Tile(this));
-	}
+	_board = std::vector<std::vector<Tile>>(dimensions.y, std::vector<Tile>(dimensions.x, Tile(this)));
 }
 void Board::setUnderlyingBoard(std::vector<std::vector<Tile>> board)
 {
@@ -308,7 +309,8 @@ void Board::Tile::setState(TileType state, bool evaluateParentBoard)
 	_state = state;
 	if (evaluateParentBoard &&
 		getState() != TileType::Empty &&
-		getState() != TileType::GameInProgress)
+		getState() != TileType::GameInProgress &&
+		getParentBoard() != nullptr)
 	{
 		getParentBoard()->evaluateBoard();
 	}
