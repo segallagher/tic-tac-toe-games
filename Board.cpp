@@ -1,7 +1,7 @@
-// Board.h
+// Board.cpp
 // Nathan Damon
 // 2023-10-08
-// Template header file for Board (a class that will serve as the board for the game).
+// Source file for Board (a class that will serve as the board for the game).
 
 #include "board.h"
 
