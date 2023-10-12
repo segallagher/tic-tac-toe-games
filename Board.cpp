@@ -31,6 +31,7 @@ Board::~Board()
 
 void Board::evaluateBoard()
 {
+	/*
 	if (this == nullptr || isActive() == false)
 		return;
 
@@ -66,6 +67,7 @@ void Board::evaluateBoard()
 		setBoardToSingleTile(winnerTile);
 		setActive(false);
 	}
+	*/
 }
 
 bool Board::attemptPlaceTile(int x, int y)
