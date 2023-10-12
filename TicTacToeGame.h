@@ -23,10 +23,13 @@ public:
 	// Called once per frame
 	bool OnUserUpdate(float fElapsedTime) override;
 
-	// Draws everything that needs to be drawn
-	void drawing();
 	// Loads the sprites for the game
 	void loadSprites();
+	// Draws everything that needs to be drawn
+	void drawing();
+
+	// Displays GameRules
+	void drawGameRulesText();
 
 	// ######################
 	// Board setup
@@ -50,13 +53,13 @@ public:
 	void drawButtons();
 	// Checks the buttons for clicking
 	void checkButtons();
+	void setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active);
 
 public:
 	// ######################
 	// Variables
 	// ######################
 
-	bool _redrawScreen = true;
 	std::vector<std::unique_ptr<Button>> _regularButtons = std::vector<std::unique_ptr<Button>>();
 	std::vector<std::unique_ptr<BoardButton>> _boardButtons = std::vector<std::unique_ptr<BoardButton>>();
 
@@ -64,8 +67,16 @@ public:
 	olc::Renderable _boardTileBackground;
 	olc::Renderable _boardOTile;
 	olc::Renderable _boardXTile;
+	olc::Renderable _blankXOTile;
 
 	Board _board;
+
+	bool _drawRules = false;
+
+	// Temporay!
+	std::string _nRowGameRulesText =
+		"Get n of your tiles\n"
+		"in a row to win!";
 };
 
 #endif // !TicTacToeGame_HPP
