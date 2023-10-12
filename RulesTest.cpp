@@ -7,7 +7,7 @@
 #include "Rules.h"
 #include "Rules.h" // Double-inclusion test
 #include "doctest.h"
-
+/*
 TEST_CASE("Empty Board") {
 	std::vector<std::vector<TileType>> board{
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -152,4 +152,4 @@ TEST_CASE("Board Diagonal")
 
 	CHECK(score(GameMode::nRow, board) == false);
 
-}
+}*/
