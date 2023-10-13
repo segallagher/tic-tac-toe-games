@@ -24,8 +24,8 @@ bool TicTacToeGame::OnUserCreate()
 	// Called once at the start, so create things here
 	loadSprites();
 
-	//ultimateBoardSetup();
-	regularBoardSetup();
+	ultimateBoardSetup();
+	//regularBoardSetup();
 	buttonSetup();
 
 	return true;
@@ -50,10 +50,44 @@ void TicTacToeGame::drawing()
 
 	drawButtons();
 
+	// Is game complete
+	if (_boardParentTile.getState() != TileType::GameInProgress && _boardParentTile.getState() != TileType::Empty)
+		drawGameWinner();
+
+	// Should the rules be displayed
 	if (_drawRules)
 		drawGameRulesText();
+}
+void TicTacToeGame::drawGameWinner()
+{
+	if (_resetGameButtonPtr != nullptr)
+		_resetGameButtonPtr->setActive(true);
 
-	//_redrawScreen = false;
+	float backGroundDisplayRatio = 0.9f;
+	float winnerTileDisplayRatio = 0.45f;
+	auto backGroundPosition = olc::vf2d(GetScreenSize() * int(1000.0f * (1.0f - backGroundDisplayRatio) / 2.0f) / 1000);
+	auto winnerTilePosition = olc::vf2d(GetScreenSize() * int(1000.0f * (1.0f - winnerTileDisplayRatio) / 2.0f) / 1000);
+	auto titleOffset = olc::vf2d(90, 20);
+	auto winnerTileOffset = olc::vf2d(70, 40);
+
+	olc::vf2d backgroundDecalScale = {
+		float(GetScreenSize().x * int(1000.0f * backGroundDisplayRatio) / 1000) / float(_blankXOTile.Sprite()->width),
+		float(GetScreenSize().y * int(1000.0f * backGroundDisplayRatio) / 1000) / float(_blankXOTile.Sprite()->height)
+	};
+	olc::vf2d winnerDecalScale = {
+		float(GetScreenSize().x * int(1000.0f * winnerTileDisplayRatio) / 1000) / float(_blankXOTile.Sprite()->width),
+		float(GetScreenSize().y * int(1000.0f * winnerTileDisplayRatio) / 1000) / float(_blankXOTile.Sprite()->height)
+	};
+
+	// Set decal
+	auto decalPtr = _boardOTile.Decal();
+	if(_boardParentTile.getState() == TileType::X)
+		decalPtr = _boardXTile.Decal();
+
+	// Draw
+	DrawDecal(backGroundPosition, _blankXOTile.Decal(), backgroundDecalScale, olc::GREY);
+	DrawDecal(winnerTilePosition, decalPtr, winnerDecalScale);
+	DrawStringDecal(backGroundPosition + titleOffset, "WINNER", olc::DARK_GREY, { 1.25f, 1.25f });
 }
 void TicTacToeGame::drawGameRulesText()
 {
@@ -82,6 +116,8 @@ void TicTacToeGame::loadSprites()
 
 void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
 {
+	_boardParentTile.setState(TileType::Empty);
+	_board.setParentTile(&_boardParentTile);
 	_board.setBoardDimensions(bigBoardDimensions);
 	for (size_t y = 0; y < _board.getBoardDimensions().y; y++)
 	{
@@ -95,6 +131,8 @@ void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions,
 }
 void TicTacToeGame::regularBoardSetup(olc::v2d_generic<int> boardDimensions)
 {
+	_boardParentTile.setState(TileType::Empty);
+	_board.setParentTile(&_boardParentTile);
 	_board.setBoardDimensions(boardDimensions);
 	boardButtonSetup();
 }
@@ -223,6 +261,22 @@ void TicTacToeGame::buttonSetup()
 				}
 			});
 		_regularButtons.push_back(std::make_unique<Button>(button));
+	}
+
+	// Button: Start new game
+	{
+		Button button({ 0, 0 }, GetScreenSize());
+		button.setDecal(_boardXTile.Decal());
+		button.setHidden(true);
+		button.setActive(false);
+		_regularButtons.push_back(std::make_unique<Button>(button));
+		auto buttonptr = _regularButtons.back().get();
+		buttonptr->setCallback([&, buttonptr]
+			{
+				buttonptr->setActive(false);
+				ultimateBoardSetup();
+			});
+		_resetGameButtonPtr = buttonptr;
 	}
 
 	// Buttons: show and close rules
