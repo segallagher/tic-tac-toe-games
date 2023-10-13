@@ -7,7 +7,7 @@
 #include "Rules.h"
 #include "Rules.h" // Double-inclusion test
 #include "doctest.h"
-/*
+
 TEST_CASE("Empty Board") {
 	std::vector<std::vector<TileType>> board{
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -15,7 +15,7 @@ TEST_CASE("Empty Board") {
 		{TileType::Empty,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false,TileType::Empty));
 }
 
 TEST_CASE("Board Horizontal") {
@@ -25,7 +25,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::Empty,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -33,7 +33,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::Empty,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::O));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -41,7 +41,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::X,TileType::X,TileType::X}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
 
 	board = {
 		{TileType::O,TileType::X,TileType::O},
@@ -49,7 +49,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::Empty,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -57,7 +57,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::Empty,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::Empty},
@@ -65,7 +65,7 @@ TEST_CASE("Board Horizontal") {
 		{TileType::X,TileType::Empty,TileType::X}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 }
 
 TEST_CASE("Board Vertical") {
@@ -75,7 +75,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::X,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
 
 	board = {
 		{TileType::Empty,TileType::O,TileType::Empty},
@@ -83,7 +83,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::Empty,TileType::O,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::O));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::X},
@@ -91,7 +91,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::Empty,TileType::Empty,TileType::X}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
 
 	board = {
 		{TileType::X,TileType::Empty,TileType::Empty},
@@ -99,7 +99,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::O,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
 	board = {
 		{TileType::Empty,TileType::O,TileType::Empty},
@@ -107,7 +107,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::Empty,TileType::X,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::X},
@@ -115,7 +115,7 @@ TEST_CASE("Board Vertical") {
 		{TileType::Empty,TileType::Empty,TileType::X}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 }
 
 TEST_CASE("Board Diagonal")
@@ -126,7 +126,7 @@ TEST_CASE("Board Diagonal")
 		{TileType::Empty,TileType::Empty,TileType::X}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::O},
@@ -134,7 +134,7 @@ TEST_CASE("Board Diagonal")
 		{TileType::O,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == true);
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::O));
 
 	board = {
 		{TileType::X,TileType::Empty,TileType::O},
@@ -142,7 +142,7 @@ TEST_CASE("Board Diagonal")
 		{TileType::O,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
 	board = {
 		{TileType::Empty,TileType::Empty,TileType::O},
@@ -150,6 +150,90 @@ TEST_CASE("Board Diagonal")
 		{TileType::O,TileType::Empty,TileType::Empty}
 	};
 
-	CHECK(score(GameMode::nRow, board) == false);
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
 
-}*/
+}
+
+TEST_CASE("Board 5x5")
+{
+	std::vector<std::vector<TileType>> board{
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::X}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
+
+	board = {
+		{TileType::O,TileType::O,TileType::O,TileType::O,TileType::O},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::O));
+
+	board = {
+		{TileType::X,TileType::Empty,TileType::O,TileType::Empty,TileType::Empty},
+		{TileType::X,TileType::Empty,TileType::O,TileType::Empty,TileType::Empty},
+		{TileType::X,TileType::Empty,TileType::O,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::O,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
+
+	board = {
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::O,TileType::X,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::O,TileType::O,TileType::X,TileType::Empty},
+		{TileType::O,TileType::Empty,TileType::Empty,TileType::Empty,TileType::O}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
+
+}
+
+TEST_CASE("Board 7x7")
+{
+	std::vector<std::vector<TileType>> board{
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::GameInProgress,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::GameInProgress,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::GameInProgress,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::X));
+
+	board = {
+		{TileType::X,TileType::X,TileType::Empty,TileType::Empty,TileType::GameInProgress,TileType::O,TileType::Empty},
+		{TileType::X,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::O,TileType::Empty},
+		{TileType::X,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::O,TileType::Empty},
+		{TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::O,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::O,TileType::Empty},
+		{TileType::Empty,TileType::GameInProgress,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(true, TileType::O));
+
+	board = {
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::O,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::O,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::X,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::O,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty},
+		{TileType::X,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty,TileType::Empty}
+	};
+
+	CHECK(score(GameMode::nRow, board) == std::pair(false, TileType::Empty));
+
+}
