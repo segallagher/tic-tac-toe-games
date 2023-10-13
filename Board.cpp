@@ -31,43 +31,13 @@ Board::~Board()
 
 void Board::evaluateBoard()
 {
-	/*
-	if (this == nullptr || isActive() == false)
-		return;
-
-	std::cout << "Scoring check here: Board.scoreBoard" << std::endl;
+	auto result = score(GameMode::nRow, getBoardTilesAsTileType());
 	
-	bool scoring = true;
-
-	for (int y = 0; y < getBoardDimensions().y; y++)
-	{
-		for (int x = 0; x < getBoardDimensions().x; x++)
-		{
-			auto tileState = getTile(x, y)->getState();
-			if (tileState == TileType::Empty ||
-				tileState == TileType::GameInProgress)
-			{
-				scoring = false;
-			}
-		}
-	}
-
-	// Need: -> ruleset
-	// Have: getBoardTilesAsTileType()
-	
-	if (scoring && _setSingleOnGameWon)
-	{
-		auto winnerTile = TileType::Empty;
-		if (scoring)
-			winnerTile = TileType::O;
-		else
-			winnerTile = TileType::X;
-
-		setParentTileState(winnerTile);
-		setBoardToSingleTile(winnerTile);
+	if (result.first) {
+		setParentTileState(result.second);
+		setBoardToSingleTile(result.second);
 		setActive(false);
 	}
-	*/
 }
 
 bool Board::attemptPlaceTile(int x, int y)
