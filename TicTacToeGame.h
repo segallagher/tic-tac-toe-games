@@ -28,6 +28,9 @@ public:
 	// Draws everything that needs to be drawn
 	void drawing();
 
+	// Displays game win
+	void drawGameWinner();
+
 	// Displays GameRules
 	void drawGameRulesText();
 
@@ -60,18 +63,27 @@ public:
 	// Variables
 	// ######################
 
+	// Buttons
 	std::vector<std::unique_ptr<Button>> _regularButtons = std::vector<std::unique_ptr<Button>>();
 	std::vector<std::unique_ptr<BoardButton>> _boardButtons = std::vector<std::unique_ptr<BoardButton>>();
+	
+	// Used by rule display buttons
+	bool _drawRules = false;
+	Button* _resetGameButtonPtr;
 
+
+	// Sprites
 	olc::Renderable _boardBorder;
 	olc::Renderable _boardTileBackground;
 	olc::Renderable _boardOTile;
 	olc::Renderable _boardXTile;
 	olc::Renderable _blankXOTile;
 
+	// Will only hold the game result that _board will give it
+	Board::Tile _boardParentTile;
 	Board _board;
 
-	bool _drawRules = false;
+
 
 	// Temporay!
 	std::string _nRowGameRulesText =
