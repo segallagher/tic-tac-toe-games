@@ -75,8 +75,11 @@ public:
 
 	// Temporay!
 	std::string _nRowGameRulesText =
-		"Get n of your tiles\n"
-		"in a row to win!";
+		"Get 3 of your tiles in\n"
+		"a row to win a small\n"
+		"board and get 3 big\n"
+		"tiles in a row to win\n"
+		"the big board!";
 };
 
 #endif // !TicTacToeGame_HPP

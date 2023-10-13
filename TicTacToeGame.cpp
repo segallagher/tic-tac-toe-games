@@ -24,8 +24,8 @@ bool TicTacToeGame::OnUserCreate()
 	// Called once at the start, so create things here
 	loadSprites();
 
-	//ultimateBoardSetup();
-	regularBoardSetup();
+	ultimateBoardSetup();
+	//regularBoardSetup();
 	buttonSetup();
 
 	return true;
