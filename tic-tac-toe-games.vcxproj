@@ -149,6 +149,7 @@
     <ClInclude Include="TicTacToeGame.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="Sprites\BlankXOTile.png" />
     <Image Include="Sprites\BoardBorder.png" />
     <Image Include="Sprites\IconForTicTac.ico" />
     <Image Include="Sprites\OTile.png" />
