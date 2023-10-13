@@ -226,6 +226,11 @@ GameMode Board::getRuleset()
 void Board::setActive(bool isActive)
 {
 	_isActive = isActive;
+	for (auto& y : getUnderlyingBoard())
+		for (auto& x : y)
+			if (x.getChildBoard() != nullptr)
+				x.getChildBoard()->setActive(isActive);
+				
 }
 bool Board::isActive()
 {
