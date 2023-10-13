@@ -3,24 +3,10 @@
 // 2023-10-08
 // Header file for Board (a class that will serve as the board for the game).
 
-//#include "Rules.h"
-#include "olcPixelGameEngine.h"
+#include "Rules.h"
 
 #ifndef BOARD_HPP
 #define BOARD_HPP
-
-enum GameMode
-	{
-		nRow
-	};
-
-	enum TileType
-	{
-		Empty,
-		GameInProgress,
-		O,
-		X
-	};
 
 class Board
 {

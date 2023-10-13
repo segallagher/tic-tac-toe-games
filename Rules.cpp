@@ -5,33 +5,33 @@
 
 #include "Rules.h"
 
-bool score(GameMode ruleset, std::vector<std::vector<Board::Tile>> & board) {
+std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::vector<TileType>> & board) {
 	if (ruleset == GameMode::nRow) {
 		return _nRow(board, 3);	// HARDCODED VALUE ALERT, find a way to pass n in
 	}
 
 }
 
-bool _nRow(std::vector<std::vector<Board::Tile>> & board, int length) {
+std::pair<bool, TileType> _nRow(const std::vector<std::vector<TileType>> & board, int length) {
 	// Iterate over rows
 	for (int i = 0; i < board.size(); i++) {
 		// Iterate over indices
 		for (int j = 0; j < board.at(i).size(); j++) {
-			TileType tileValue = board.at(i).at(j).getState();
+			TileType tileValue = board.at(i).at(j);
 
 			if (tileValue == TileType::Empty || tileValue == TileType::GameInProgress) {
 				continue;
 			}
 
 			if (_checkContinuous(i, j, board, tileValue, length)) {
-				return true;
+				return std::make_pair(true, tileValue);
 			}
 		}
 	}
-	return false;
+	return std::make_pair(false, TileType::Empty);
 }
 
-bool _checkContinuous(int row, int column, std::vector<std::vector<Board::Tile>> & board, TileType tileValue, int length) {
+bool _checkContinuous(int row, int column, const std::vector<std::vector<TileType>> & board, const TileType tileValue, int length) {
 	std::vector<std::vector<int>> directions{
 		{-1,-1}, {0,-1}, {1,-1},
 		{-1,0}, {1,0},
@@ -44,7 +44,7 @@ bool _checkContinuous(int row, int column, std::vector<std::vector<Board::Tile>>
 
 			if ((x >= 0 && x < board.at(0).size()) && (y >= 0 && y < board.size())) {
 			}
-			if ((x < 0 || x >= board.at(0).size()) || (y < 0 || y >= board.size()) || board.at(y).at(x).getState() != tileValue) {
+			if ((x < 0 || x >= board.at(0).size()) || (y < 0 || y >= board.size()) || board.at(y).at(x) != tileValue) {
 				break;
 			}
 			if (i == length - 1) {

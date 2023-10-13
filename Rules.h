@@ -6,10 +6,22 @@
 #include <vector>
 #include "TicTacToeGame.h"
 #include <iostream>
-#include "Board.h"
 
 #ifndef RULES_HPP
 #define RULES_HPP
+
+enum GameMode
+{
+	nRow
+};
+
+enum TileType
+{
+	Empty,
+	GameInProgress,
+	O,
+	X
+};
 
 /// <summary>
 /// checks if a board satisfies a win condition
@@ -17,7 +29,7 @@
 /// <param name="ruleset"> enum value from GameMode to choose rules </param>
 /// <param name="board"> full board of tic-tac-toe </param>
 /// <returns> true if win, false otherwise </returns>
-bool score(GameMode ruleset, std::vector<std::vector<Board::Tile>> & board);
+std::pair<bool, TileType> score(GameMode ruleset, const std::vector<std::vector<TileType>> & board);
 
 /// <summary>
 /// score using the nRow rules
@@ -25,7 +37,7 @@ bool score(GameMode ruleset, std::vector<std::vector<Board::Tile>> & board);
 /// <param name="board"> full tic-tac-toe board </param>
 /// <param name="length"> length of continuous tileType needed to win </param>
 /// <returns> true if win, false otherwise </returns>
-bool _nRow(std::vector<std::vector<Board::Tile>> & board, int length);
+std::pair<bool, TileType> _nRow(const std::vector<std::vector<TileType>> & board, int length);
 
 /// <summary>
 /// checks if there are "length" in a row of a single tileType
@@ -36,6 +48,6 @@ bool _nRow(std::vector<std::vector<Board::Tile>> & board, int length);
 /// <param name="tileValue"> type of tile to check for </param>
 /// <param name="length"> continuous length of tiles to check for </param>
 /// <returns> true if win, false otherwise </returns>
-bool _checkContinuous(int row, int column, std::vector<std::vector<Board::Tile>> & board, TileType tileValue, int length);
+bool _checkContinuous(int row, int column, const std::vector<std::vector<TileType>> & board, TileType tileValue, int length);
 
 #endif // !RULES_HPP
