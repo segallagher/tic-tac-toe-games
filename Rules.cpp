@@ -7,7 +7,11 @@
 
 std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::vector<TileType>> & board) {
 	if (ruleset == GameMode::nRow) {
-		return _nRow(board, 3);	// HARDCODED VALUE ALERT, find a way to pass n in
+		int length = board.size();
+		if (length > 5) {
+			length = 5;
+		}
+		return _nRow(board, length);	// HARDCODED VALUE ALERT, find a way to pass n in
 	}
 
 }
