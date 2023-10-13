@@ -5,14 +5,14 @@
 
 #include "Rules.h"
 
-bool score(GameMode ruleset, std::vector<std::vector<TileType>> & board) {
+std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::vector<TileType>> & board) {
 	if (ruleset == GameMode::nRow) {
 		return _nRow(board, 3);	// HARDCODED VALUE ALERT, find a way to pass n in
 	}
 
 }
 
-bool _nRow(std::vector<std::vector<TileType>> & board, int length) {
+std::pair<bool, TileType> _nRow(const std::vector<std::vector<TileType>> & board, int length) {
 	// Iterate over rows
 	for (int i = 0; i < board.size(); i++) {
 		// Iterate over indices
@@ -24,14 +24,14 @@ bool _nRow(std::vector<std::vector<TileType>> & board, int length) {
 			}
 
 			if (_checkContinuous(i, j, board, tileValue, length)) {
-				return true;
+				return std::make_pair(true, tileValue);
 			}
 		}
 	}
-	return false;
+	return std::make_pair(false, TileType::Empty);
 }
 
-bool _checkContinuous(int row, int column, std::vector<std::vector<TileType>> & board, TileType tileValue, int length) {
+bool _checkContinuous(int row, int column, const std::vector<std::vector<TileType>> & board, const TileType tileValue, int length) {
 	std::vector<std::vector<int>> directions{
 		{-1,-1}, {0,-1}, {1,-1},
 		{-1,0}, {1,0},
