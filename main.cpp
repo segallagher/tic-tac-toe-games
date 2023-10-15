@@ -11,9 +11,10 @@
 
 int main(int argc, char** argv)
 {
+	int dtresult = 0;
+#ifdef DEBUG
 	// Doctest Testing
 	doctest::Context dtcontext;
-	int dtresult = 0;
 	dtcontext.applyCommandLine(argc, argv);
 	dtcontext.setOption("no-breaks", true); // Don't break in the debugger when assertions fail
 
@@ -22,6 +23,7 @@ int main(int argc, char** argv)
 		return dtresult;		// propagate the result of the tests
 
 	// End Doctest Testing
+#endif // DEBUG
 
 	TicTacToeGame game;
 	if (game.Construct(256, 240, 4, 4))

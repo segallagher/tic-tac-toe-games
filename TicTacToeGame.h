@@ -12,8 +12,17 @@
 #include "board.h"
 #include <utility>
 
+#define DEBUG
+
 class TicTacToeGame : public olc::PixelGameEngine
 {
+	enum class ButtonSet
+	{
+		MainMenu,
+		OptionsMenu,
+		Gameplay
+	};
+
 public:
 	TicTacToeGame();
 
@@ -22,6 +31,8 @@ public:
 	bool OnUserCreate() override;
 	// Called once per frame
 	bool OnUserUpdate(float fElapsedTime) override;
+
+	void startGame();
 
 	// Loads the sprites for the game
 	void loadSprites();
@@ -47,6 +58,15 @@ public:
 	void boardButtonSetup();
 
 	// ######################
+	// Menus
+	// ######################
+
+	void setMenu(ButtonSet buttonSet);
+	void mainMenuButtonSetup();
+	void optionsMenuButtonSetup();
+	void gameplayButtonSetup();
+
+	// ######################
 	// Buttons
 	// ######################
 
@@ -54,8 +74,12 @@ public:
 	void buttonSetup();
 	// Draws the buttons
 	void drawButtons();
+	void drawButtons(std::vector<std::unique_ptr<Button>>& buttons);
+	void drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
 	// Checks the buttons for clicking
 	void checkButtons();
+	bool checkButtons(std::vector<std::unique_ptr<Button>>& buttons);
+	bool checkButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
 	void setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active);
 
 public:
@@ -63,14 +87,18 @@ public:
 	// Variables
 	// ######################
 
+	// Specifies which set of buttons to use
+	ButtonSet _currentButtonSet = ButtonSet::MainMenu;
+
 	// Buttons
-	std::vector<std::unique_ptr<Button>> _regularButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _mainMenuButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _optionsMenuButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _gameplayButtons = std::vector<std::unique_ptr<Button>>();
 	std::vector<std::unique_ptr<BoardButton>> _boardButtons = std::vector<std::unique_ptr<BoardButton>>();
 	
 	// Used by rule display buttons
 	bool _drawRules = false;
 	Button* _resetGameButtonPtr;
-
 
 	// Sprites
 	olc::Renderable _boardBorder;

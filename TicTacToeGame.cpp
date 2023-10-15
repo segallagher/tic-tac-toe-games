@@ -43,6 +43,12 @@ bool TicTacToeGame::OnUserUpdate(float fElapsedTime)
 	return true;
 }
 
+void TicTacToeGame::startGame()
+{
+	ultimateBoardSetup();
+	setMenu(ButtonSet::Gameplay);
+}
+
 void TicTacToeGame::drawing()
 {
 	// Clear the screen to given color
@@ -105,6 +111,7 @@ void TicTacToeGame::drawGameRulesText()
 	DrawStringDecal(rulesPosition + rulesTitleOffset, "Game Rules", olc::GREY, {1.25f, 1.25f});
 	DrawStringDecal(rulesPosition + rulesTextOffset, _nRowGameRulesText, olc::GREY);
 }
+
 void TicTacToeGame::loadSprites()
 {
 	_boardBorder.Load("./Sprites/BoardBorder.png");
@@ -193,14 +200,77 @@ void TicTacToeGame::boardButtonSetup()
 			}
 		}
 	}
-
-	// Outputs the number of buttons
-	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
 }
 
-void TicTacToeGame::buttonSetup()
+void TicTacToeGame::setMenu(ButtonSet buttonSet)
 {
-	_regularButtons.clear();
+	_currentButtonSet = buttonSet;
+}
+
+void TicTacToeGame::mainMenuButtonSetup()
+{
+	_mainMenuButtons.clear();
+
+	olc::vi2d buttonDimensions = { 100, 40 };
+	int spacing = 10;
+
+	// Button: Start game
+	{
+		Button button({ 0, 0 }, buttonDimensions);
+		button.setDecal(_blankXOTile.Decal());
+		button.setCallback([&]
+			{
+				startGame();
+			});
+		_mainMenuButtons.push_back(std::make_unique<Button>(button));		
+	}
+
+	// Button: Options menu
+	{
+		Button button({ 0, 0 }, buttonDimensions);
+		button.setDecal(_blankXOTile.Decal());
+		button.setCallback([&]
+			{
+				setMenu(ButtonSet::OptionsMenu);
+			});
+		_mainMenuButtons.push_back(std::make_unique<Button>(button));
+	}
+
+
+	// Place buttons
+	int startPosition = (GetScreenSize().y - _mainMenuButtons.size() * (buttonDimensions.y + spacing)) / 2;
+	int offset = 0;
+	for (auto& buttonPtr : _mainMenuButtons)
+	{
+		olc::vi2d position = { 0, startPosition + (buttonDimensions.y + spacing) * offset };
+
+		buttonPtr->setPosition(position);
+		buttonPtr->centerHorizontally(this);
+		offset++;
+	}
+}
+
+void TicTacToeGame::optionsMenuButtonSetup()
+{
+	_optionsMenuButtons.clear();
+
+	// Button: Options menu
+	{
+		Button button({ 0, 0 }, { 20, 20 });
+		button.setDecal(_blankXOTile.Decal());
+		button.setCallback([&]
+			{
+				setMenu(ButtonSet::MainMenu);
+			});
+		_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+	}
+}
+
+void TicTacToeGame::gameplayButtonSetup()
+{
+	_gameplayButtons.clear();
+
+
 
 	// Button: Request dimensions input
 	{
@@ -235,7 +305,7 @@ void TicTacToeGame::buttonSetup()
 				}
 				std::cout << "Board resized" << std::endl;
 			});
-		_regularButtons.push_back(std::make_unique<Button>(button));
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
 	}
 
 	// Button: Change board type
@@ -260,7 +330,21 @@ void TicTacToeGame::buttonSetup()
 					std::cout << "Switched to Regular!:" << std::endl;
 				}
 			});
-		_regularButtons.push_back(std::make_unique<Button>(button));
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
+	}
+
+
+
+
+	// Button: Quit to main menu
+	{
+		Button button({ 0, 0 }, { 20, 20 });
+		button.setDecal(_blankXOTile.Decal());
+		button.setCallback([&]
+			{
+				setMenu(ButtonSet::MainMenu);
+			});
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
 	}
 
 	// Button: Start new game
@@ -269,8 +353,8 @@ void TicTacToeGame::buttonSetup()
 		button.setDecal(_boardXTile.Decal());
 		button.setHidden(true);
 		button.setActive(false);
-		_regularButtons.push_back(std::make_unique<Button>(button));
-		auto buttonptr = _regularButtons.back().get();
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
+		auto buttonptr = _gameplayButtons.back().get();
 		buttonptr->setCallback([&, buttonptr]
 			{
 				buttonptr->setActive(false);
@@ -286,18 +370,18 @@ void TicTacToeGame::buttonSetup()
 		buttonShow.setDecal(_blankXOTile.Decal());
 		buttonShow.alignTopRight(this);
 		buttonShow.setPosition(buttonShow.getPosition() + olc::vi2d(0, 25 * 2));
-		_regularButtons.push_back(std::make_unique<Button>(buttonShow));
+		_gameplayButtons.push_back(std::make_unique<Button>(buttonShow));
 
-		auto buttonShowPtr = _regularButtons.back().get();
+		auto buttonShowPtr = _gameplayButtons.back().get();
 
 		// Button: Close rules
 		Button buttonClose({ 0, 0 }, GetScreenSize());
 		buttonClose.setDecal(_blankXOTile.Decal());
 		buttonClose.setActive(false);
 		buttonClose.setHidden(true);
-		_regularButtons.push_back(std::make_unique<Button>(buttonClose));
+		_gameplayButtons.push_back(std::make_unique<Button>(buttonClose));
 
-		auto buttonClosePtr = _regularButtons.back().get();
+		auto buttonClosePtr = _gameplayButtons.back().get();
 
 		// Set callbacks ###################################################33
 
@@ -315,40 +399,100 @@ void TicTacToeGame::buttonSetup()
 				_drawRules = false;
 				buttonShowPtr->setActive(true);
 				buttonClosePtr->setActive(false);
-			});		
+			});
 	}
-
-	// Outputs the number of buttons
-	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
 }
+
+void TicTacToeGame::buttonSetup()
+{
+	mainMenuButtonSetup();
+	optionsMenuButtonSetup();
+	gameplayButtonSetup();
+
+#ifdef DEBUG
+	// Outputs the number of buttons
+	auto buttonCount =
+		_mainMenuButtons.size() +
+		_optionsMenuButtons.size() +
+		_gameplayButtons.size() +
+		_boardButtons.size();
+	std::cout << "[DEBUG]: Button count: " << buttonCount << std::endl;
+#endif // DEBUG
+}
+
 void TicTacToeGame::drawButtons()
 {
-	for (auto& button : _regularButtons)
+	switch (_currentButtonSet)
 	{
-		if (button->isHidden() == false)
-			button->drawSelf(this);
+	default:
+	case ButtonSet::MainMenu:
+		drawButtons(_mainMenuButtons);
+		break;
+	case ButtonSet::OptionsMenu:
+		drawButtons(_optionsMenuButtons);
+		break;
+	case ButtonSet::Gameplay:
+		drawButtons(_gameplayButtons);
+		drawButtons(_boardButtons);
+		break;
 	}
-	for (auto& button : _boardButtons)
+}
+void TicTacToeGame::drawButtons(std::vector<std::unique_ptr<Button>>& buttons)
+{
+	for (auto& button : buttons)
 	{
 		if (button->isHidden() == false)
 			button->drawSelf(this);
 	}
 }
+void TicTacToeGame::drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons)
+{
+	for (auto& button : buttons)
+	{
+		if (button->isHidden() == false)
+			button->drawSelf(this);
+	}
+}
+
 void TicTacToeGame::checkButtons()
 {
 	if (GetMouse(0).bReleased)
 	{
-		for (int i = _regularButtons.size() - 1; i >= 0; --i) {
-			if (_regularButtons[i]->isActive())
-				if (_regularButtons[i]->isPressed(GetMousePos()))
-					return;
+		switch (_currentButtonSet)
+		{
+		default:
+		case ButtonSet::MainMenu:
+			checkButtons(_mainMenuButtons);
+			break;
+		case ButtonSet::OptionsMenu:
+			checkButtons(_optionsMenuButtons);
+			break;
+		case ButtonSet::Gameplay:
+			if (checkButtons(_gameplayButtons))
+				return;
+			checkButtons(_boardButtons);
+			break;
 		}
-		for (int i = _boardButtons.size() - 1; i >= 0; --i) {
-			if (_boardButtons[i]->isActive())
-				if (_boardButtons[i]->isPressed(GetMousePos()))
-					return;
-		}
+
 	}
+}
+bool TicTacToeGame::checkButtons(std::vector<std::unique_ptr<Button>>& buttons)
+{
+	for (size_t i = buttons.size(); i >= 1; --i) {
+		if (buttons[i - 1]->isActive())
+			if (buttons[i - 1]->isPressed(GetMousePos()))
+				return true;
+	}
+	return false;
+}
+bool TicTacToeGame::checkButtons(std::vector<std::unique_ptr<BoardButton>>& buttons)
+{
+	for (size_t i = buttons.size(); i >= 1; --i) {
+		if (buttons[i - 1]->isActive())
+			if (buttons[i - 1]->isPressed(GetMousePos()))
+				return true;
+	}
+	return false;
 }
 
 void TicTacToeGame::setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active)
