@@ -139,6 +139,10 @@ void TicTacToeGame::loadSprites()
 	_boardOTile.Load("./Sprites/OTile.png");
 	_boardXTile.Load("./Sprites/XTile.png");
 	_blankXOTile.Load("./Sprites/BlankXOTile.png");
+	_rightArrow.Load("./Sprites/ArrowTile.png");
+	_leftArrow.Load("./Sprites/ArrowTileLeft.png");
+	_leftArrowWTail.Load("./Sprites/ArrowWTailTile.png");
+	_questionMarkTile.Load("./Sprites/QuestionMarkTile.png");
 }
 
 void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
@@ -237,7 +241,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Start game
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_blankXOTile.Decal());
+		button.setDecal(_boardOTile.Decal());
 		button.setCallback([&]
 			{
 				startGame();
@@ -248,7 +252,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Options menu
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_blankXOTile.Decal());
+		button.setDecal(_questionMarkTile.Decal());
 		button.setCallback([&]
 			{
 				setMenu(ButtonSet::OptionsMenu);
@@ -259,7 +263,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Quit game
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_blankXOTile.Decal());
+		button.setDecal(_boardXTile.Decal());
 		button.setCallback([&]
 			{
 				olc_Terminate();
@@ -287,7 +291,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	// Button: Return to main menu
 	{
 		Button button({ 0, 0 }, { 20, 20 });
-		button.setDecal(_blankXOTile.Decal());
+		button.setDecal(_leftArrowWTail.Decal());
 		button.setCallback([&]
 			{
 				setMenu(ButtonSet::MainMenu);
@@ -306,7 +310,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 		// Decrement button
 		{
 			Button button({ xPosition, yPosition }, { 20, 20 });
-			button.setDecal(_blankXOTile.Decal());
+			button.setDecal(_leftArrow.Decal());
 			button.setCallback([&]
 				{
 					setOptionsBoardSize(getOptionsBoardSize() - 1);
@@ -317,7 +321,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 		// Increment button
 		{
 			Button button({ xPosition + xOffset, yPosition + yOffset }, { 20, 20 });
-			button.setDecal(_blankXOTile.Decal());
+			button.setDecal(_rightArrow.Decal());
 			button.setCallback([&]
 				{
 					setOptionsBoardSize(getOptionsBoardSize() + 1);
@@ -337,7 +341,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 		// Decrement button
 		{
 			Button button({ xPosition, yPosition }, { 20, 20 });
-			button.setDecal(_blankXOTile.Decal());
+			button.setDecal(_leftArrow.Decal());
 			button.setCallback([&]
 				{
 					previousGameMode();
@@ -348,7 +352,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 		// Increment button
 		{
 			Button button({ xPosition + xOffset, yPosition + yOffset }, { 20, 20 });
-			button.setDecal(_blankXOTile.Decal());
+			button.setDecal(_rightArrow.Decal());
 			button.setCallback([&]
 				{
 					nextGameMode();
@@ -361,7 +365,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	{
 		// Button: Show rules
 		Button buttonShow({ 0, 0 }, { 20, 20 });
-		buttonShow.setDecal(_blankXOTile.Decal());
+		buttonShow.setDecal(_questionMarkTile.Decal());
 		buttonShow.alignTopRight(this);
 		_optionsMenuButtons.push_back(std::make_unique<Button>(buttonShow));
 
@@ -403,7 +407,7 @@ void TicTacToeGame::gameplayButtonSetup()
 	// Button: Quit to main menu
 	{
 		Button button({ 0, 0 }, { 20, 20 });
-		button.setDecal(_blankXOTile.Decal());
+		button.setDecal(_leftArrowWTail.Decal());
 		button.setCallback([&]
 			{
 				setMenu(ButtonSet::MainMenu);
@@ -432,7 +436,7 @@ void TicTacToeGame::gameplayButtonSetup()
 	{
 		// Button: Show rules
 		Button buttonShow({ 0, 0 }, { 20, 20 });
-		buttonShow.setDecal(_blankXOTile.Decal());
+		buttonShow.setDecal(_questionMarkTile.Decal());
 		buttonShow.alignTopRight(this);
 		_gameplayButtons.push_back(std::make_unique<Button>(buttonShow));
 

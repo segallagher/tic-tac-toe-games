@@ -118,6 +118,10 @@ public:
 	olc::Renderable _boardOTile;
 	olc::Renderable _boardXTile;
 	olc::Renderable _blankXOTile;
+	olc::Renderable _rightArrow;
+	olc::Renderable _leftArrow;
+	olc::Renderable _leftArrowWTail;
+	olc::Renderable _questionMarkTile;
 
 	// Will only hold the game result that _board will give it
 	Board::Tile _boardParentTile;

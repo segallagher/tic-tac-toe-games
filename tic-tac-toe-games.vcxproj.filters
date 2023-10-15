@@ -85,6 +85,21 @@
     <Image Include="Sprites\IconForTicTac.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Sprites\BlankXOTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\ArrowTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\ArrowWTailTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\QuestionMarkTile.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\ArrowTileLeft.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tic-tac-toe-games.rc">
