@@ -44,6 +44,7 @@ public:
 
 	// Displays GameRules
 	void drawGameRulesText();
+	std::string getGameRulesText();
 
 	// ######################
 	// Board setup
@@ -80,7 +81,18 @@ public:
 	void checkButtons();
 	bool checkButtons(std::vector<std::unique_ptr<Button>>& buttons);
 	bool checkButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
+
+	// Sets given buttons to the specified active state
 	void setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active);
+
+	// ######################
+	// Options functions
+	// ######################
+
+	void setOptionsBoardSize(int size);
+	int getOptionsBoardSize();
+	void nextGameMode();
+	void previousGameMode();
 
 public:
 	// ######################
@@ -111,7 +123,10 @@ public:
 	Board::Tile _boardParentTile;
 	Board _board;
 
-
+	// Options
+	int _optionsBoardSize = 3;
+	int _boardSizeMin = 1;
+	int _boardSizeMax = 20;
 
 	// Temporay!
 	std::string _nRowGameRulesText =
