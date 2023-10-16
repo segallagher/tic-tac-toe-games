@@ -44,6 +44,7 @@ public:
 
 	// Displays GameRules
 	void drawGameRulesText();
+	// Gets the current gamemode's rules text
 	std::string getGameRulesText();
 
 	// ######################
@@ -62,9 +63,13 @@ public:
 	// Menus
 	// ######################
 
+	// Sets the current menu/items to display
 	void setMenu(ButtonSet buttonSet);
+	// Sets up the main menu buttons
 	void mainMenuButtonSetup();
+	// Sets up the options menu buttons
 	void optionsMenuButtonSetup();
+	// Sets up the gameplay buttons
 	void gameplayButtonSetup();
 
 	// ######################
@@ -73,8 +78,9 @@ public:
 
 	// Sets up the buttons
 	void buttonSetup();
-	// Draws the buttons
+	// Draws the menu and button items
 	void drawMenuItems();
+	// Draws the given buttons
 	void drawButtons(std::vector<std::unique_ptr<Button>>& buttons);
 	void drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
 	// Checks the buttons for clicking
@@ -89,12 +95,18 @@ public:
 	// Options functions
 	// ######################
 
+	// Gets the current ruleset as a string
 	std::string getRulesetAsString(GameMode ruleset);
+	// Draws the text display for the options menu
 	void drawOptionsMenuDetails();
 
+	// Sets the board's size
 	void setOptionsBoardSize(int size);
+	// Gets the board's size
 	int getOptionsBoardSize();
+	// Switches to the next gamemode
 	void nextGameMode();
+	// Switches to the previous gamemode
 	void previousGameMode();
 
 public:
