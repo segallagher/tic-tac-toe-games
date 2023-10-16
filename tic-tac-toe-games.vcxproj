@@ -155,8 +155,11 @@
     <Image Include="Sprites\BlankXOTile.png" />
     <Image Include="Sprites\BoardBorder.png" />
     <Image Include="Sprites\IconForTicTac.ico" />
+    <Image Include="Sprites\Options.png" />
     <Image Include="Sprites\OTile.png" />
     <Image Include="Sprites\QuestionMarkTile.png" />
+    <Image Include="Sprites\Quit.png" />
+    <Image Include="Sprites\StartGame.png" />
     <Image Include="Sprites\TileBackground.png" />
     <Image Include="Sprites\XTile.png" />
   </ItemGroup>

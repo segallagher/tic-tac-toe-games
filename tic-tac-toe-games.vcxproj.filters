@@ -100,6 +100,15 @@
     <Image Include="Sprites\ArrowTileLeft.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Sprites\Options.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\Quit.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Sprites\StartGame.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="tic-tac-toe-games.rc">

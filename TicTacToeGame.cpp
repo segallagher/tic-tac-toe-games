@@ -134,14 +134,24 @@ std::string TicTacToeGame::getGameRulesText()
 
 void TicTacToeGame::loadSprites()
 {
+	// Main menu
+	_startGameTile.Load("./Sprites/StartGame.png");
+	_optionsTile.Load("./Sprites/Options.png");
+	_quitTile.Load("./Sprites/Quit.png");
+
+	// Gameplay
 	_boardBorder.Load("./Sprites/BoardBorder.png");
 	_boardTileBackground.Load("./Sprites/TileBackground.png");
 	_boardOTile.Load("./Sprites/OTile.png");
 	_boardXTile.Load("./Sprites/XTile.png");
-	_blankXOTile.Load("./Sprites/BlankXOTile.png");
+
+	// Options
 	_rightArrow.Load("./Sprites/ArrowTile.png");
 	_leftArrow.Load("./Sprites/ArrowTileLeft.png");
 	_leftArrowWTail.Load("./Sprites/ArrowWTailTile.png");
+
+	// Other
+	_blankXOTile.Load("./Sprites/BlankXOTile.png");
 	_questionMarkTile.Load("./Sprites/QuestionMarkTile.png");
 }
 
@@ -241,7 +251,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Start game
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_boardOTile.Decal());
+		button.setDecal(_startGameTile.Decal());
 		button.setCallback([&]
 			{
 				startGame();
@@ -252,7 +262,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Options menu
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_questionMarkTile.Decal());
+		button.setDecal(_optionsTile.Decal());
 		button.setCallback([&]
 			{
 				setMenu(ButtonSet::OptionsMenu);
@@ -263,7 +273,7 @@ void TicTacToeGame::mainMenuButtonSetup()
 	// Button: Quit game
 	{
 		Button button({ 0, 0 }, buttonDimensions);
-		button.setDecal(_boardXTile.Decal());
+		button.setDecal(_quitTile.Decal());
 		button.setCallback([&]
 			{
 				olc_Terminate();

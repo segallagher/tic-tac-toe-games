@@ -112,17 +112,6 @@ public:
 	bool _drawRules = false;
 	Button* _resetGameButtonPtr;
 
-	// Sprites
-	olc::Renderable _boardBorder;
-	olc::Renderable _boardTileBackground;
-	olc::Renderable _boardOTile;
-	olc::Renderable _boardXTile;
-	olc::Renderable _blankXOTile;
-	olc::Renderable _rightArrow;
-	olc::Renderable _leftArrow;
-	olc::Renderable _leftArrowWTail;
-	olc::Renderable _questionMarkTile;
-
 	// Will only hold the game result that _board will give it
 	Board::Tile _boardParentTile;
 	Board _board;
@@ -139,6 +128,30 @@ public:
 		"board and get 3 big\n"
 		"tiles in a row to win\n"
 		"the big board!";
+
+	// ######################
+	// Sprites
+	// ######################
+
+	// Main menu
+	olc::Renderable _startGameTile;
+	olc::Renderable _optionsTile;
+	olc::Renderable _quitTile;
+
+	// Gameplay
+	olc::Renderable _boardBorder;
+	olc::Renderable _boardTileBackground;
+	olc::Renderable _boardOTile;
+	olc::Renderable _boardXTile;
+
+	// Options
+	olc::Renderable _rightArrow;
+	olc::Renderable _leftArrow;
+	olc::Renderable _leftArrowWTail;
+
+	// Other
+	olc::Renderable _blankXOTile;
+	olc::Renderable _questionMarkTile;
 };
 
 #endif // !TicTacToeGame_HPP
