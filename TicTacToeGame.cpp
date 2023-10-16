@@ -232,7 +232,6 @@ void TicTacToeGame::setMenu(ButtonSet buttonSet)
 	if(_resetGameButtonPtr != nullptr)
 		_resetGameButtonPtr->setActive(false);
 }
-
 void TicTacToeGame::mainMenuButtonSetup()
 {
 	_mainMenuButtons.clear();
@@ -285,7 +284,6 @@ void TicTacToeGame::mainMenuButtonSetup()
 		offset++;
 	}
 }
-
 void TicTacToeGame::optionsMenuButtonSetup()
 {
 	_optionsMenuButtons.clear();
@@ -304,7 +302,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	// Button: Board Size
 	{
 		int xPosition = 40;
-		int yPosition = 50;
+		int yPosition = 70;
 
 		int xOffset = 25;
 		int yOffset = 0;
@@ -335,7 +333,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	// Button: Gamemode
 	{
 		int xPosition = 40;
-		int yPosition = 110;
+		int yPosition = 130;
 
 		int xOffset = 25;
 		int yOffset = 0;
@@ -401,7 +399,6 @@ void TicTacToeGame::optionsMenuButtonSetup()
 			});
 	}
 }
-
 void TicTacToeGame::gameplayButtonSetup()
 {
 	_gameplayButtons.clear();
@@ -497,6 +494,7 @@ void TicTacToeGame::drawMenuItems()
 	default:
 	case ButtonSet::MainMenu:
 		drawButtons(_mainMenuButtons);
+		drawMainMenuDetails();
 		break;
 	case ButtonSet::OptionsMenu:
 		drawButtons(_optionsMenuButtons);
@@ -512,6 +510,7 @@ void TicTacToeGame::drawMenuItems()
 		break;
 	}
 }
+
 void TicTacToeGame::drawButtons(std::vector<std::unique_ptr<Button>>& buttons)
 {
 	for (auto& button : buttons)
@@ -589,13 +588,35 @@ std::string TicTacToeGame::getRulesetAsString(GameMode ruleset)
 	}
 }
 
+void TicTacToeGame::drawMainMenuDetails()
+{
+	// Main menu title
+	{
+		olc::vi2d rectSize = { 210, 25 };
+		olc::vi2d pos = { (GetScreenSize().x - rectSize.x) / 2, 5 };
+		olc::vi2d boarder = { 1, 1 };
+		FillRect(pos, rectSize, olc::GREY);
+		FillRect(pos + boarder, rectSize - (boarder * 2));
+		DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Tic Tac Toe Games", olc::DARK_GREY, { 1.5f, 1.5f * 1.5f });
+	}
+}
+
 void TicTacToeGame::drawOptionsMenuDetails()
 {
+	// Options title
+	{
+		olc::vi2d rectSize = { 120, 25 };
+		olc::vi2d pos = { (GetScreenSize().x - rectSize.x) / 2, 5 };
+		olc::vi2d boarder = { 1, 1 };
+		FillRect(pos, rectSize, olc::GREY);
+		FillRect(pos + boarder, rectSize - (boarder * 2));
+		DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Options", olc::DARK_GREY, { 1.5f, 1.5f * 1.5f });
+	}
 
-	olc::vi2d positionOfOption = { 40, 25 };
+	olc::vi2d positionOfOption = { 40, 45 };
 
 	// Arrow tile's start position + arrow tile size * 2 with spacing of 5
-	olc::vi2d positionAfterArrows = { 40 + 20 + 5 + 20, 50 };
+	olc::vi2d positionAfterArrows = { 40 + 20 + 5 + 20, 70 };
 	int spacing = 5;
 	olc::vi2d boarder = { 1, 1 };
 

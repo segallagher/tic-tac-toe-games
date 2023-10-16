@@ -97,6 +97,8 @@ public:
 
 	// Gets the current ruleset as a string
 	std::string getRulesetAsString(GameMode ruleset);
+	// Draws the text display for the main menu
+	void drawMainMenuDetails();
 	// Draws the text display for the options menu
 	void drawOptionsMenuDetails();
 
