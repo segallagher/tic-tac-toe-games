@@ -74,7 +74,7 @@ public:
 	// Sets up the buttons
 	void buttonSetup();
 	// Draws the buttons
-	void drawButtons();
+	void drawMenuItems();
 	void drawButtons(std::vector<std::unique_ptr<Button>>& buttons);
 	void drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
 	// Checks the buttons for clicking
@@ -88,6 +88,9 @@ public:
 	// ######################
 	// Options functions
 	// ######################
+
+	std::string getRulesetAsString(GameMode ruleset);
+	void drawOptionsMenuDetails();
 
 	void setOptionsBoardSize(int size);
 	int getOptionsBoardSize();

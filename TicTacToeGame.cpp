@@ -56,11 +56,7 @@ void TicTacToeGame::drawing()
 	// Clear the screen to given color
 	Clear(olc::BLACK);
 
-	drawButtons();
-
-	// Is game complete
-	if (_boardParentTile.getState() != TileType::GameInProgress && _boardParentTile.getState() != TileType::Empty)
-		drawGameWinner();
+	drawMenuItems();
 
 	// Should the rules be displayed
 	if (_drawRules)
@@ -68,13 +64,6 @@ void TicTacToeGame::drawing()
 }
 void TicTacToeGame::drawGameWinner()
 {
-	if (_currentButtonSet != ButtonSet::Gameplay)
-	{
-		if (_resetGameButtonPtr != nullptr)
-			_resetGameButtonPtr->setActive(false);
-		return;
-	}
-
 	if (_resetGameButtonPtr != nullptr)
 		_resetGameButtonPtr->setActive(true);
 
@@ -181,6 +170,7 @@ void TicTacToeGame::regularBoardSetup(olc::v2d_generic<int> boardDimensions)
 void TicTacToeGame::boardButtonSetup()
 {
 	_boardButtons.clear();
+	int boardSizeInThousandths = 800;
 
 	auto boardButtonSetup = [&](BoardButton* boardButtonPtr, olc::vi2d dimensions, Board* board) {
 		boardButtonPtr->setDimensions(dimensions);
@@ -204,11 +194,12 @@ void TicTacToeGame::boardButtonSetup()
 		_boardButtons.push_back(std::move(boardButton));
 		auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
 
-		auto boardScale = olc::vi2d(GetScreenSize().x * 700 / 1000, GetScreenSize().y * 700 / 1000);
+		auto boardScale = olc::vi2d(GetScreenSize().x * boardSizeInThousandths / 1000, GetScreenSize().y * boardSizeInThousandths / 1000);
 		boardButtonSetup(boardButtonPtr, boardScale, &_board);
 	}
 	else
 	{
+		auto boardScale = olc::vi2d(GetScreenSize().x * (boardSizeInThousandths / superBoardDimensions.x) / 1000, GetScreenSize().y * (boardSizeInThousandths / superBoardDimensions.y) / 1000);
 		for (int y = 0; y < superBoardDimensions.y; y++)
 		{
 			for (int x = 0; x < superBoardDimensions.x; x++)
@@ -217,7 +208,6 @@ void TicTacToeGame::boardButtonSetup()
 				_boardButtons.push_back(std::move(boardButton));
 				auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
 
-				auto boardScale = olc::vi2d(GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000);
 				boardButtonSetup(boardButtonPtr, boardScale, _board.getUnderlyingBoard()[y][x].getChildBoard().get());
 
 				// Top left position
@@ -239,6 +229,8 @@ void TicTacToeGame::boardButtonSetup()
 void TicTacToeGame::setMenu(ButtonSet buttonSet)
 {
 	_currentButtonSet = buttonSet;
+	if(_resetGameButtonPtr != nullptr)
+		_resetGameButtonPtr->setActive(false);
 }
 
 void TicTacToeGame::mainMenuButtonSetup()
@@ -312,9 +304,9 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	// Button: Board Size
 	{
 		int xPosition = 40;
-		int yPosition = 40;
+		int yPosition = 50;
 
-		int xOffset = 40;
+		int xOffset = 25;
 		int yOffset = 0;
 
 		// Decrement button
@@ -343,9 +335,9 @@ void TicTacToeGame::optionsMenuButtonSetup()
 	// Button: Gamemode
 	{
 		int xPosition = 40;
-		int yPosition = 80;
+		int yPosition = 110;
 
-		int xOffset = 40;
+		int xOffset = 25;
 		int yOffset = 0;
 
 		// Decrement button
@@ -498,7 +490,7 @@ void TicTacToeGame::buttonSetup()
 #endif // DEBUG
 }
 
-void TicTacToeGame::drawButtons()
+void TicTacToeGame::drawMenuItems()
 {
 	switch (_currentButtonSet)
 	{
@@ -508,10 +500,15 @@ void TicTacToeGame::drawButtons()
 		break;
 	case ButtonSet::OptionsMenu:
 		drawButtons(_optionsMenuButtons);
+		drawOptionsMenuDetails();
 		break;
 	case ButtonSet::Gameplay:
 		drawButtons(_gameplayButtons);
 		drawButtons(_boardButtons);
+
+		// Is game complete
+		if (_boardParentTile.getState() != TileType::GameInProgress && _boardParentTile.getState() != TileType::Empty)
+			drawGameWinner();
 		break;
 	}
 }
@@ -579,6 +576,81 @@ void TicTacToeGame::setButtonsActive(std::vector<std::unique_ptr<Button>>& butto
 		button->setActive(active);
 }
 
+std::string TicTacToeGame::getRulesetAsString(GameMode ruleset)
+{
+	switch (ruleset)
+	{
+	case nRow:
+		return "nRow";
+	case endOfList:
+		return "endOfList";
+	default:
+		return "No display";
+	}
+}
+
+void TicTacToeGame::drawOptionsMenuDetails()
+{
+
+	olc::vi2d positionOfOption = { 40, 25 };
+
+	// Arrow tile's start position + arrow tile size * 2 with spacing of 5
+	olc::vi2d positionAfterArrows = { 40 + 20 + 5 + 20, 50 };
+	int spacing = 5;
+	olc::vi2d boarder = { 1, 1 };
+
+	int gamemodeStringOffset = 60;
+	olc::vf2d textScale = { 1.5f, 1.5f };
+
+	// Board size
+	{
+		// Board size option title
+		{
+			olc::vi2d rectSize = { 130, 20 };
+			olc::vi2d pos = positionOfOption;
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Size of board(s)", olc::DARK_GREY, { 1.0f, 1.5f });
+		}
+
+		// Board size value
+		{
+			olc::vi2d rectSize = { 28, 20 };
+			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y };
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+
+			auto formatting = [](std::string input) {
+				if (input.length() == 1)
+					input = '0' + input;
+				return input;
+				};
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), formatting(std::to_string(getOptionsBoardSize())), olc::GREY, textScale);
+		}
+	}
+
+	// Gamemode / Ruleset
+	{
+		// Gamemode / Ruleset option title
+		{
+			olc::vi2d rectSize = { 100, 20 };
+			olc::vi2d pos = positionOfOption + olc::vi2d(0, gamemodeStringOffset);
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Gamemode", olc::DARK_GREY, { 1.0f, 1.5f });
+		}
+
+		// Gamemode / Ruleset value
+		{
+			olc::vi2d rectSize = { 80, 20 };
+			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y + gamemodeStringOffset };
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), getRulesetAsString(_board.getRuleset()), olc::GREY, textScale);
+		}
+	}
+}
+
 void TicTacToeGame::setOptionsBoardSize(int size)
 {
 	if (size == 2) // Do not allow a 2x2
@@ -590,10 +662,6 @@ void TicTacToeGame::setOptionsBoardSize(int size)
 	}
 
 	_optionsBoardSize = std::max(std::min(size, _boardSizeMax), _boardSizeMin);
-
-#ifdef DEBUG
-	std::cout << "[DEBUG]: Board size set to " << _optionsBoardSize << std::endl;
-#endif // DEBUG
 }
 int TicTacToeGame::getOptionsBoardSize()
 {
