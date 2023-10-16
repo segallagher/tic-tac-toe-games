@@ -12,8 +12,17 @@
 #include "board.h"
 #include <utility>
 
+#define DEBUG
+
 class TicTacToeGame : public olc::PixelGameEngine
 {
+	enum class ButtonSet
+	{
+		MainMenu,
+		OptionsMenu,
+		Gameplay
+	};
+
 public:
 	TicTacToeGame();
 
@@ -22,6 +31,8 @@ public:
 	bool OnUserCreate() override;
 	// Called once per frame
 	bool OnUserUpdate(float fElapsedTime) override;
+
+	void startGame();
 
 	// Loads the sprites for the game
 	void loadSprites();
@@ -33,6 +44,8 @@ public:
 
 	// Displays GameRules
 	void drawGameRulesText();
+	// Gets the current gamemode's rules text
+	std::string getGameRulesText();
 
 	// ######################
 	// Board setup
@@ -47,43 +60,81 @@ public:
 	void boardButtonSetup();
 
 	// ######################
+	// Menus
+	// ######################
+
+	// Sets the current menu/items to display
+	void setMenu(ButtonSet buttonSet);
+	// Sets up the main menu buttons
+	void mainMenuButtonSetup();
+	// Sets up the options menu buttons
+	void optionsMenuButtonSetup();
+	// Sets up the gameplay buttons
+	void gameplayButtonSetup();
+
+	// ######################
 	// Buttons
 	// ######################
 
 	// Sets up the buttons
 	void buttonSetup();
-	// Draws the buttons
-	void drawButtons();
+	// Draws the menu and button items
+	void drawMenuItems();
+	// Draws the given buttons
+	void drawButtons(std::vector<std::unique_ptr<Button>>& buttons);
+	void drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
 	// Checks the buttons for clicking
 	void checkButtons();
+	bool checkButtons(std::vector<std::unique_ptr<Button>>& buttons);
+	bool checkButtons(std::vector<std::unique_ptr<BoardButton>>& buttons);
+
+	// Sets given buttons to the specified active state
 	void setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active);
+
+	// ######################
+	// Options functions
+	// ######################
+
+	// Gets the current ruleset as a string
+	std::string getRulesetAsString(GameMode ruleset);
+	// Draws the text display for the options menu
+	void drawOptionsMenuDetails();
+
+	// Sets the board's size
+	void setOptionsBoardSize(int size);
+	// Gets the board's size
+	int getOptionsBoardSize();
+	// Switches to the next gamemode
+	void nextGameMode();
+	// Switches to the previous gamemode
+	void previousGameMode();
 
 public:
 	// ######################
 	// Variables
 	// ######################
 
+	// Specifies which set of buttons to use
+	ButtonSet _currentButtonSet = ButtonSet::MainMenu;
+
 	// Buttons
-	std::vector<std::unique_ptr<Button>> _regularButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _mainMenuButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _optionsMenuButtons = std::vector<std::unique_ptr<Button>>();
+	std::vector<std::unique_ptr<Button>> _gameplayButtons = std::vector<std::unique_ptr<Button>>();
 	std::vector<std::unique_ptr<BoardButton>> _boardButtons = std::vector<std::unique_ptr<BoardButton>>();
 	
 	// Used by rule display buttons
 	bool _drawRules = false;
 	Button* _resetGameButtonPtr;
 
-
-	// Sprites
-	olc::Renderable _boardBorder;
-	olc::Renderable _boardTileBackground;
-	olc::Renderable _boardOTile;
-	olc::Renderable _boardXTile;
-	olc::Renderable _blankXOTile;
-
 	// Will only hold the game result that _board will give it
 	Board::Tile _boardParentTile;
 	Board _board;
 
-
+	// Options
+	int _optionsBoardSize = 3;
+	int _boardSizeMin = 1;
+	int _boardSizeMax = 20;
 
 	// Temporay!
 	std::string _nRowGameRulesText =
@@ -92,6 +143,30 @@ public:
 		"board and get 3 big\n"
 		"tiles in a row to win\n"
 		"the big board!";
+
+	// ######################
+	// Sprites
+	// ######################
+
+	// Main menu
+	olc::Renderable _startGameTile;
+	olc::Renderable _optionsTile;
+	olc::Renderable _quitTile;
+
+	// Gameplay
+	olc::Renderable _boardBorder;
+	olc::Renderable _boardTileBackground;
+	olc::Renderable _boardOTile;
+	olc::Renderable _boardXTile;
+
+	// Options
+	olc::Renderable _rightArrow;
+	olc::Renderable _leftArrow;
+	olc::Renderable _leftArrowWTail;
+
+	// Other
+	olc::Renderable _blankXOTile;
+	olc::Renderable _questionMarkTile;
 };
 
 #endif // !TicTacToeGame_HPP

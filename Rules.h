@@ -12,7 +12,8 @@
 
 enum GameMode
 {
-	nRow
+	nRow,
+	endOfList // needed for gamemode changing
 };
 
 enum TileType

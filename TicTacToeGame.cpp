@@ -43,16 +43,20 @@ bool TicTacToeGame::OnUserUpdate(float fElapsedTime)
 	return true;
 }
 
+void TicTacToeGame::startGame()
+{
+	ultimateBoardSetup({ 3, 3 }, { _optionsBoardSize, _optionsBoardSize });
+	Board::setCurrentTileType(TileType::O);
+	Board::setCurrentTurn(0);
+	setMenu(ButtonSet::Gameplay);
+}
+
 void TicTacToeGame::drawing()
 {
 	// Clear the screen to given color
 	Clear(olc::BLACK);
 
-	drawButtons();
-
-	// Is game complete
-	if (_boardParentTile.getState() != TileType::GameInProgress && _boardParentTile.getState() != TileType::Empty)
-		drawGameWinner();
+	drawMenuItems();
 
 	// Should the rules be displayed
 	if (_drawRules)
@@ -103,15 +107,41 @@ void TicTacToeGame::drawGameRulesText()
 
 	DrawDecal(rulesPosition, _blankXOTile.Decal(), decalScale);
 	DrawStringDecal(rulesPosition + rulesTitleOffset, "Game Rules", olc::GREY, {1.25f, 1.25f});
-	DrawStringDecal(rulesPosition + rulesTextOffset, _nRowGameRulesText, olc::GREY);
+	DrawStringDecal(rulesPosition + rulesTextOffset, getGameRulesText(), olc::GREY);
 }
+std::string TicTacToeGame::getGameRulesText()
+{
+	switch (_board.getRuleset())
+	{
+	case nRow:
+		return _nRowGameRulesText;
+	default:
+	case endOfList:
+		return "Ruleset error: change gamemode";
+	}
+}
+
 void TicTacToeGame::loadSprites()
 {
+	// Main menu
+	_startGameTile.Load("./Sprites/StartGame.png");
+	_optionsTile.Load("./Sprites/Options.png");
+	_quitTile.Load("./Sprites/Quit.png");
+
+	// Gameplay
 	_boardBorder.Load("./Sprites/BoardBorder.png");
 	_boardTileBackground.Load("./Sprites/TileBackground.png");
 	_boardOTile.Load("./Sprites/OTile.png");
 	_boardXTile.Load("./Sprites/XTile.png");
+
+	// Options
+	_rightArrow.Load("./Sprites/ArrowTile.png");
+	_leftArrow.Load("./Sprites/ArrowTileLeft.png");
+	_leftArrowWTail.Load("./Sprites/ArrowWTailTile.png");
+
+	// Other
 	_blankXOTile.Load("./Sprites/BlankXOTile.png");
+	_questionMarkTile.Load("./Sprites/QuestionMarkTile.png");
 }
 
 void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
@@ -140,6 +170,7 @@ void TicTacToeGame::regularBoardSetup(olc::v2d_generic<int> boardDimensions)
 void TicTacToeGame::boardButtonSetup()
 {
 	_boardButtons.clear();
+	int boardSizeInThousandths = 800;
 
 	auto boardButtonSetup = [&](BoardButton* boardButtonPtr, olc::vi2d dimensions, Board* board) {
 		boardButtonPtr->setDimensions(dimensions);
@@ -163,11 +194,12 @@ void TicTacToeGame::boardButtonSetup()
 		_boardButtons.push_back(std::move(boardButton));
 		auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
 
-		auto boardScale = olc::vi2d(GetScreenSize().x * 700 / 1000, GetScreenSize().y * 700 / 1000);
+		auto boardScale = olc::vi2d(GetScreenSize().x * boardSizeInThousandths / 1000, GetScreenSize().y * boardSizeInThousandths / 1000);
 		boardButtonSetup(boardButtonPtr, boardScale, &_board);
 	}
 	else
 	{
+		auto boardScale = olc::vi2d(GetScreenSize().x * (boardSizeInThousandths / superBoardDimensions.x) / 1000, GetScreenSize().y * (boardSizeInThousandths / superBoardDimensions.y) / 1000);
 		for (int y = 0; y < superBoardDimensions.y; y++)
 		{
 			for (int x = 0; x < superBoardDimensions.x; x++)
@@ -176,7 +208,6 @@ void TicTacToeGame::boardButtonSetup()
 				_boardButtons.push_back(std::move(boardButton));
 				auto boardButtonPtr = dynamic_cast<BoardButton*>(_boardButtons.back().get());
 
-				auto boardScale = olc::vi2d(GetScreenSize().x * (700 / superBoardDimensions.x) / 1000, GetScreenSize().y * (700 / superBoardDimensions.y) / 1000);
 				boardButtonSetup(boardButtonPtr, boardScale, _board.getUnderlyingBoard()[y][x].getChildBoard().get());
 
 				// Top left position
@@ -193,111 +224,163 @@ void TicTacToeGame::boardButtonSetup()
 			}
 		}
 	}
-
-	// Outputs the number of buttons
-	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
 }
 
-void TicTacToeGame::buttonSetup()
+void TicTacToeGame::setMenu(ButtonSet buttonSet)
 {
-	_regularButtons.clear();
+	_currentButtonSet = buttonSet;
+	if(_resetGameButtonPtr != nullptr)
+		_resetGameButtonPtr->setActive(false);
+}
 
-	// Button: Request dimensions input
+void TicTacToeGame::mainMenuButtonSetup()
+{
+	_mainMenuButtons.clear();
+
+	olc::vi2d buttonDimensions = { 100, 40 };
+	int spacing = 10;
+
+	// Button: Start game
 	{
-		Button button({ 0, 0 }, { 20, 20 });
-		button.setDecal(_boardTileBackground.Decal());
-		button.alignTopRight(this);
+		Button button({ 0, 0 }, buttonDimensions);
+		button.setDecal(_startGameTile.Decal());
 		button.setCallback([&]
 			{
-				int inX = 0;
-				int inY = 0;
-				std::cout << "New board dimensions:" << std::endl;
-				std::cout << "x = ";
-				std::cin >> inX;
-				std::cout << "y = ";
-				std::cin >> inY;
-
-				if (_board.getUnderlyingBoard()[0][0].getChildBoard() == nullptr)
-				{
-					_board.setBoardDimensions({ inX, inY });
-				}
-				else
-				{
-					auto superBoardDimensions = _board.getBoardDimensions();
-					for (size_t y = 0; y < superBoardDimensions.y; y++)
-					{
-						for (size_t x = 0; x < superBoardDimensions.x; x++)
-						{
-							_board.getUnderlyingBoard()[y][x].getChildBoard()->setBoardDimensions({ inX, inY });
-							_board.getUnderlyingBoard()[y][x].setState(TileType::Empty);
-						}
-					}
-				}
-				std::cout << "Board resized" << std::endl;
+				startGame();
 			});
-		_regularButtons.push_back(std::make_unique<Button>(button));
+		_mainMenuButtons.push_back(std::make_unique<Button>(button));		
 	}
 
-	// Button: Change board type
+	// Button: Options menu
 	{
-		Button button({ 0, 0 }, { 20, 20 });
-		button.setDecal(_boardXTile.Decal());
-		button.alignTopRight(this);
-		button.setPosition(button.getPosition() + olc::vi2d(0, 25));
+		Button button({ 0, 0 }, buttonDimensions);
+		button.setDecal(_optionsTile.Decal());
 		button.setCallback([&]
 			{
-				// If a small board
-				if (_board.getUnderlyingBoard()[0][0].getChildBoard() == nullptr)
-				{
-					// Set big board
-					ultimateBoardSetup();
-					std::cout << "Switched to Ultimate!:" << std::endl;
-				}
-				else
-				{
-					// Set small board
-					regularBoardSetup();
-					std::cout << "Switched to Regular!:" << std::endl;
-				}
+				setMenu(ButtonSet::OptionsMenu);
 			});
-		_regularButtons.push_back(std::make_unique<Button>(button));
+		_mainMenuButtons.push_back(std::make_unique<Button>(button));
 	}
 
-	// Button: Start new game
+	// Button: Quit game
 	{
-		Button button({ 0, 0 }, GetScreenSize());
-		button.setDecal(_boardXTile.Decal());
-		button.setHidden(true);
-		button.setActive(false);
-		_regularButtons.push_back(std::make_unique<Button>(button));
-		auto buttonptr = _regularButtons.back().get();
-		buttonptr->setCallback([&, buttonptr]
+		Button button({ 0, 0 }, buttonDimensions);
+		button.setDecal(_quitTile.Decal());
+		button.setCallback([&]
 			{
-				buttonptr->setActive(false);
-				ultimateBoardSetup();
+				olc_Terminate();
 			});
-		_resetGameButtonPtr = buttonptr;
+		_mainMenuButtons.push_back(std::make_unique<Button>(button));
 	}
 
-	// Buttons: show and close rules
+	// Place buttons
+	int startPosition = (GetScreenSize().y - _mainMenuButtons.size() * (buttonDimensions.y + spacing)) / 2;
+	int offset = 0;
+	for (auto& buttonPtr : _mainMenuButtons)
+	{
+		olc::vi2d position = { 0, startPosition + (buttonDimensions.y + spacing) * offset };
+
+		buttonPtr->setPosition(position);
+		buttonPtr->centerHorizontally(this);
+		offset++;
+	}
+}
+
+void TicTacToeGame::optionsMenuButtonSetup()
+{
+	_optionsMenuButtons.clear();
+
+	// Button: Return to main menu
+	{
+		Button button({ 0, 0 }, { 20, 20 });
+		button.setDecal(_leftArrowWTail.Decal());
+		button.setCallback([&]
+			{
+				setMenu(ButtonSet::MainMenu);
+			});
+		_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+	}
+
+	// Button: Board Size
+	{
+		int xPosition = 40;
+		int yPosition = 50;
+
+		int xOffset = 25;
+		int yOffset = 0;
+
+		// Decrement button
+		{
+			Button button({ xPosition, yPosition }, { 20, 20 });
+			button.setDecal(_leftArrow.Decal());
+			button.setCallback([&]
+				{
+					setOptionsBoardSize(getOptionsBoardSize() - 1);
+				});
+			_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+		}
+
+		// Increment button
+		{
+			Button button({ xPosition + xOffset, yPosition + yOffset }, { 20, 20 });
+			button.setDecal(_rightArrow.Decal());
+			button.setCallback([&]
+				{
+					setOptionsBoardSize(getOptionsBoardSize() + 1);
+				});
+			_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+		}
+	}
+
+	// Button: Gamemode
+	{
+		int xPosition = 40;
+		int yPosition = 110;
+
+		int xOffset = 25;
+		int yOffset = 0;
+
+		// Decrement button
+		{
+			Button button({ xPosition, yPosition }, { 20, 20 });
+			button.setDecal(_leftArrow.Decal());
+			button.setCallback([&]
+				{
+					previousGameMode();
+				});
+			_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+		}
+
+		// Increment button
+		{
+			Button button({ xPosition + xOffset, yPosition + yOffset }, { 20, 20 });
+			button.setDecal(_rightArrow.Decal());
+			button.setCallback([&]
+				{
+					nextGameMode();
+				});
+			_optionsMenuButtons.push_back(std::make_unique<Button>(button));
+		}
+	}
+
+	// Buttons: Show and close rules
 	{
 		// Button: Show rules
 		Button buttonShow({ 0, 0 }, { 20, 20 });
-		buttonShow.setDecal(_blankXOTile.Decal());
+		buttonShow.setDecal(_questionMarkTile.Decal());
 		buttonShow.alignTopRight(this);
-		buttonShow.setPosition(buttonShow.getPosition() + olc::vi2d(0, 25 * 2));
-		_regularButtons.push_back(std::make_unique<Button>(buttonShow));
+		_optionsMenuButtons.push_back(std::make_unique<Button>(buttonShow));
 
-		auto buttonShowPtr = _regularButtons.back().get();
+		auto buttonShowPtr = _optionsMenuButtons.back().get();
 
 		// Button: Close rules
 		Button buttonClose({ 0, 0 }, GetScreenSize());
 		buttonClose.setDecal(_blankXOTile.Decal());
 		buttonClose.setActive(false);
 		buttonClose.setHidden(true);
-		_regularButtons.push_back(std::make_unique<Button>(buttonClose));
+		_optionsMenuButtons.push_back(std::make_unique<Button>(buttonClose));
 
-		auto buttonClosePtr = _regularButtons.back().get();
+		auto buttonClosePtr = _optionsMenuButtons.back().get();
 
 		// Set callbacks ###################################################33
 
@@ -315,44 +398,298 @@ void TicTacToeGame::buttonSetup()
 				_drawRules = false;
 				buttonShowPtr->setActive(true);
 				buttonClosePtr->setActive(false);
-			});		
+			});
+	}
+}
+
+void TicTacToeGame::gameplayButtonSetup()
+{
+	_gameplayButtons.clear();
+
+	// Button: Quit to main menu
+	{
+		Button button({ 0, 0 }, { 20, 20 });
+		button.setDecal(_leftArrowWTail.Decal());
+		button.setCallback([&]
+			{
+				setMenu(ButtonSet::MainMenu);
+			});
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
 	}
 
-	// Outputs the number of buttons
-	std::cout << "[DEBUG]: Button count: " << _regularButtons.size() + _boardButtons.size() << std::endl;
+	// Button: Return to main on win
+	{
+		Button button({ 0, 0 }, GetScreenSize());
+		button.setDecal(_boardXTile.Decal());
+		button.setHidden(true);
+		button.setActive(false);
+		_gameplayButtons.push_back(std::make_unique<Button>(button));
+		auto buttonptr = _gameplayButtons.back().get();
+		buttonptr->setCallback([&, buttonptr]
+			{
+				buttonptr->setActive(false);
+				setMenu(ButtonSet::MainMenu);
+			});
+		// Button is set active through this pointer on game win
+		_resetGameButtonPtr = buttonptr;
+	}
+
+	// Buttons: Show and close rules
+	{
+		// Button: Show rules
+		Button buttonShow({ 0, 0 }, { 20, 20 });
+		buttonShow.setDecal(_questionMarkTile.Decal());
+		buttonShow.alignTopRight(this);
+		_gameplayButtons.push_back(std::make_unique<Button>(buttonShow));
+
+		auto buttonShowPtr = _gameplayButtons.back().get();
+
+		// Button: Close rules
+		Button buttonClose({ 0, 0 }, GetScreenSize());
+		buttonClose.setDecal(_blankXOTile.Decal());
+		buttonClose.setActive(false);
+		buttonClose.setHidden(true);
+		_gameplayButtons.push_back(std::make_unique<Button>(buttonClose));
+
+		auto buttonClosePtr = _gameplayButtons.back().get();
+
+		// Set callbacks ###################################################33
+
+		// Button callback: Show rules
+		buttonShowPtr->setCallback([&, buttonShowPtr, buttonClosePtr]
+			{
+				_drawRules = true;
+				buttonShowPtr->setActive(false);
+				buttonClosePtr->setActive(true);
+			});
+
+		// Button callback: Close rules
+		buttonClosePtr->setCallback([&, buttonShowPtr, buttonClosePtr]
+			{
+				_drawRules = false;
+				buttonShowPtr->setActive(true);
+				buttonClosePtr->setActive(false);
+			});
+	}
 }
-void TicTacToeGame::drawButtons()
+
+void TicTacToeGame::buttonSetup()
 {
-	for (auto& button : _regularButtons)
+	mainMenuButtonSetup();
+	optionsMenuButtonSetup();
+	gameplayButtonSetup();
+
+#ifdef DEBUG
+	// Outputs the number of buttons
+	auto buttonCount =
+		_mainMenuButtons.size() +
+		_optionsMenuButtons.size() +
+		_gameplayButtons.size() +
+		_boardButtons.size();
+	std::cout << "[DEBUG]: Button count: " << buttonCount << std::endl;
+#endif // DEBUG
+}
+
+void TicTacToeGame::drawMenuItems()
+{
+	switch (_currentButtonSet)
 	{
-		if (button->isHidden() == false)
-			button->drawSelf(this);
+	default:
+	case ButtonSet::MainMenu:
+		drawButtons(_mainMenuButtons);
+		break;
+	case ButtonSet::OptionsMenu:
+		drawButtons(_optionsMenuButtons);
+		drawOptionsMenuDetails();
+		break;
+	case ButtonSet::Gameplay:
+		drawButtons(_gameplayButtons);
+		drawButtons(_boardButtons);
+
+		// Is game complete
+		if (_boardParentTile.getState() != TileType::GameInProgress && _boardParentTile.getState() != TileType::Empty)
+			drawGameWinner();
+		break;
 	}
-	for (auto& button : _boardButtons)
+}
+void TicTacToeGame::drawButtons(std::vector<std::unique_ptr<Button>>& buttons)
+{
+	for (auto& button : buttons)
 	{
 		if (button->isHidden() == false)
 			button->drawSelf(this);
 	}
 }
+void TicTacToeGame::drawButtons(std::vector<std::unique_ptr<BoardButton>>& buttons)
+{
+	for (auto& button : buttons)
+	{
+		if (button->isHidden() == false)
+			button->drawSelf(this);
+	}
+}
+
 void TicTacToeGame::checkButtons()
 {
 	if (GetMouse(0).bReleased)
 	{
-		for (int i = _regularButtons.size() - 1; i >= 0; --i) {
-			if (_regularButtons[i]->isActive())
-				if (_regularButtons[i]->isPressed(GetMousePos()))
-					return;
+		switch (_currentButtonSet)
+		{
+		default:
+		case ButtonSet::MainMenu:
+			checkButtons(_mainMenuButtons);
+			break;
+		case ButtonSet::OptionsMenu:
+			checkButtons(_optionsMenuButtons);
+			break;
+		case ButtonSet::Gameplay:
+			if (checkButtons(_gameplayButtons))
+				return;
+			checkButtons(_boardButtons);
+			break;
 		}
-		for (int i = _boardButtons.size() - 1; i >= 0; --i) {
-			if (_boardButtons[i]->isActive())
-				if (_boardButtons[i]->isPressed(GetMousePos()))
-					return;
-		}
+
 	}
+}
+bool TicTacToeGame::checkButtons(std::vector<std::unique_ptr<Button>>& buttons)
+{
+	for (size_t i = buttons.size(); i >= 1; --i) {
+		if (buttons[i - 1]->isActive())
+			if (buttons[i - 1]->isPressed(GetMousePos()))
+				return true;
+	}
+	return false;
+}
+bool TicTacToeGame::checkButtons(std::vector<std::unique_ptr<BoardButton>>& buttons)
+{
+	for (size_t i = buttons.size(); i >= 1; --i) {
+		if (buttons[i - 1]->isActive())
+			if (buttons[i - 1]->isPressed(GetMousePos()))
+				return true;
+	}
+	return false;
 }
 
 void TicTacToeGame::setButtonsActive(std::vector<std::unique_ptr<Button>>& buttons, bool active)
 {
 	for (auto& button : buttons)
 		button->setActive(active);
+}
+
+std::string TicTacToeGame::getRulesetAsString(GameMode ruleset)
+{
+	switch (ruleset)
+	{
+	case nRow:
+		return "nRow";
+	case endOfList:
+		return "endOfList";
+	default:
+		return "No display";
+	}
+}
+
+void TicTacToeGame::drawOptionsMenuDetails()
+{
+
+	olc::vi2d positionOfOption = { 40, 25 };
+
+	// Arrow tile's start position + arrow tile size * 2 with spacing of 5
+	olc::vi2d positionAfterArrows = { 40 + 20 + 5 + 20, 50 };
+	int spacing = 5;
+	olc::vi2d boarder = { 1, 1 };
+
+	int gamemodeStringOffset = 60;
+	olc::vf2d textScale = { 1.5f, 1.5f };
+
+	// Board size
+	{
+		// Board size option title
+		{
+			olc::vi2d rectSize = { 130, 20 };
+			olc::vi2d pos = positionOfOption;
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Size of board(s)", olc::DARK_GREY, { 1.0f, 1.5f });
+		}
+
+		// Board size value
+		{
+			olc::vi2d rectSize = { 28, 20 };
+			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y };
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+
+			auto formatting = [](std::string input) {
+				if (input.length() == 1)
+					input = '0' + input;
+				return input;
+				};
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), formatting(std::to_string(getOptionsBoardSize())), olc::GREY, textScale);
+		}
+	}
+
+	// Gamemode / Ruleset
+	{
+		// Gamemode / Ruleset option title
+		{
+			olc::vi2d rectSize = { 100, 20 };
+			olc::vi2d pos = positionOfOption + olc::vi2d(0, gamemodeStringOffset);
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Gamemode", olc::DARK_GREY, { 1.0f, 1.5f });
+		}
+
+		// Gamemode / Ruleset value
+		{
+			olc::vi2d rectSize = { 80, 20 };
+			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y + gamemodeStringOffset };
+			FillRect(pos, rectSize, olc::GREY);
+			FillRect(pos + boarder, rectSize - (boarder * 2));
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), getRulesetAsString(_board.getRuleset()), olc::GREY, textScale);
+		}
+	}
+}
+
+void TicTacToeGame::setOptionsBoardSize(int size)
+{
+	if (size == 2) // Do not allow a 2x2
+	{
+		if (_optionsBoardSize < size)
+			size = 3;
+		else
+			size = 1;
+	}
+
+	_optionsBoardSize = std::max(std::min(size, _boardSizeMax), _boardSizeMin);
+}
+int TicTacToeGame::getOptionsBoardSize()
+{
+	return _optionsBoardSize;
+}
+
+void TicTacToeGame::nextGameMode()
+{
+	auto currentRuleset = _board.getRuleset();
+	currentRuleset = static_cast<GameMode>(static_cast<int>(currentRuleset) + 1);
+	if(GameMode::endOfList) // Wrap around
+		currentRuleset = static_cast<GameMode>(0);
+
+	_board.setRuleset(currentRuleset);
+#ifdef DEBUG
+	std::cout << "[DEBUG]: Ruleset set to " << currentRuleset << std::endl;
+#endif // DEBUG
+}
+void TicTacToeGame::previousGameMode()
+{
+	auto currentRuleset = _board.getRuleset();
+	if(static_cast<int>(currentRuleset) - 1 < 0) // Wrap around
+		currentRuleset = static_cast<GameMode>(static_cast<int>(GameMode::endOfList) - 1);
+	else
+		currentRuleset = static_cast<GameMode>(static_cast<int>(currentRuleset) - 1);
+
+	_board.setRuleset(currentRuleset);
+#ifdef DEBUG
+	std::cout << "[DEBUG]: Ruleset set to " << currentRuleset << std::endl;
+#endif // DEBUG
 }
