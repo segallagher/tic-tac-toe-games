@@ -51,4 +51,13 @@ std::pair<bool, TileType> _nRow(const std::vector<std::vector<TileType>> & board
 /// <returns> true if win, false otherwise </returns>
 bool _checkContinuous(int row, int column, const std::vector<std::vector<TileType>> & board, TileType tileValue, int length);
 
+// Returns the current ruleset as a string
+std::string getGamemodeAsString(GameMode gamemode);
+
+// Gets the current gamemode's rules text
+std::string getGameRulesText(GameMode gamemode);
+
+// Updates the current placeable tile to what it needs to be next
+void updateTileType(GameMode gamemode);
+
 #endif // !RULES_HPP

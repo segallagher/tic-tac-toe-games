@@ -57,7 +57,7 @@ bool Board::attemptPlaceTile(int x, int y)
 				return false;
 
 			_board[y][x].setState(getCurrentTileType());
-			cycleTileType();
+			updateTileType(getRuleset());
 
 			// Parent tile
 			if(getParentTile() != nullptr && getParentTile()->getState() == TileType::Empty)

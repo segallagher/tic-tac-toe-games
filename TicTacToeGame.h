@@ -47,9 +47,6 @@ public:
 	// Sets the text for the popup
 	void setPopup(std::string title, std::string text);
 
-	// Gets the current gamemode's rules text
-	std::string getGameRulesText();
-
 	// ######################
 	// Board setup
 	// ######################
@@ -98,8 +95,6 @@ public:
 	// Options functions
 	// ######################
 
-	// Gets the current ruleset as a string
-	std::string getRulesetAsString(GameMode ruleset);
 	// Draws the text display for the main menu
 	void drawMainMenuDetails();
 	// Draws the text display for the options menu
@@ -143,12 +138,6 @@ public:
 	int _optionsBoardSize = 3;
 	int _boardSizeMin = 3;
 	int _boardSizeMax = 20;
-
-	// Temporay! <- definately speled right
-	std::string _nRowGameRulesText =
-		"Get n (max of 5) of\n"
-		"your tiles in a row\n"
-		"to win a board.";
 
 	// ######################
 	// Sprites
