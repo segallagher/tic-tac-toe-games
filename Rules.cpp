@@ -6,12 +6,29 @@
 #include "Rules.h"
 
 std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::vector<TileType>> & board) {
-	if (ruleset == GameMode::nRow) {
-		int length = board.size();
+	switch (ruleset) {
+	case GameMode::nRow:
+	{
+		// set target length to lesser of x,y dimensions
+		int length = std::min((int)board.size(), (int)board.at(0).size());
 		if (length > 5) {
 			length = 5;
 		}
-		return _nRow(board, length);	// HARDCODED VALUE ALERT, find a way to pass n in
+		return _nRow(board, length);
+		break;
+	}
+	case GameMode::notakto:
+	{
+		// set target length to lesser of x,y dimensions
+		int length = std::min(board.size(), board.at(0).size());
+		if (length > 5) {
+			length = 5;
+		}
+		return _nRow(board, length);
+		break;
+	}
+	default:
+		break;
 	}
 
 }
