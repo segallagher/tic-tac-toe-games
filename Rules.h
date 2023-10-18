@@ -6,6 +6,7 @@
 #include <vector>
 #include "TicTacToeGame.h"
 #include <iostream>
+#include <algorithm>
 
 #ifndef RULES_HPP
 #define RULES_HPP
@@ -13,6 +14,7 @@
 enum GameMode
 {
 	nRow,
+	notakto,
 	endOfList // needed for gamemode changing
 };
 
