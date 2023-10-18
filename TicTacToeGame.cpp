@@ -115,17 +115,6 @@ void TicTacToeGame::setPopup(std::string title, std::string text)
 	_popupTitle = title;
 	_popupText = text;
 }
-std::string TicTacToeGame::getGameRulesText()
-{
-	switch (_board.getRuleset())
-	{
-	case nRow:
-		return _nRowGameRulesText;
-	default:
-	case endOfList:
-		return "Ruleset error: change gamemode";
-	}
-}
 
 void TicTacToeGame::loadSprites()
 {
@@ -469,7 +458,7 @@ void TicTacToeGame::optionsMenuButtonSetup()
 		buttonShowPtr->setCallback([&, buttonShowPtr, buttonClosePtr]
 			{
 				_drawPopup = true;
-				setPopup("Game Rules", getGameRulesText());
+				setPopup("Game Rules", getGameRulesText(_board.getRuleset()));
 				buttonShowPtr->setActive(false);
 				buttonClosePtr->setActive(true);
 			});
@@ -545,7 +534,7 @@ void TicTacToeGame::gameplayButtonSetup()
 		buttonShowPtr->setCallback([&, buttonShowPtr, buttonClosePtr]
 			{
 				_drawPopup = true;
-				setPopup("Game Rules", getGameRulesText());
+				setPopup("Game Rules", getGameRulesText(_board.getRuleset()));
 				buttonShowPtr->setActive(false);
 				buttonClosePtr->setActive(true);
 			});
@@ -665,19 +654,6 @@ void TicTacToeGame::setButtonsActive(std::vector<std::unique_ptr<Button>>& butto
 		button->setActive(active);
 }
 
-std::string TicTacToeGame::getRulesetAsString(GameMode ruleset)
-{
-	switch (ruleset)
-	{
-	case nRow:
-		return "nRow";
-	case endOfList:
-		return "endOfList";
-	default:
-		return "No display";
-	}
-}
-
 void TicTacToeGame::drawMainMenuDetails()
 {
 	// Main menu title
@@ -783,7 +759,7 @@ void TicTacToeGame::drawOptionsMenuDetails()
 			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y + gamemodeStringOffset * 2 };
 			FillRect(pos, rectSize, olc::GREY);
 			FillRect(pos + boarder, rectSize - (boarder * 2));
-			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), getRulesetAsString(_board.getRuleset()), olc::GREY, textScale);
+			DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), getGamemodeAsString(_board.getRuleset()), olc::GREY, textScale);
 		}
 	}
 }

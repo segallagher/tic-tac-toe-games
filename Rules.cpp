@@ -59,3 +59,48 @@ bool _checkContinuous(int row, int column, const std::vector<std::vector<TileTyp
 
 	return false;
 }
+
+std::string getGamemodeAsString(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		return "nRow";
+	case endOfList:
+		return "endOfList";
+	default:
+		return "No display";
+	}
+}
+
+std::string getGameRulesText(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		return
+			"Get n (max of 5) of\n"
+			"your tiles in a row\n"
+			"to win a board.";
+	default:
+	case endOfList:
+		return "Ruleset error: change gamemode";
+	}
+}
+
+void updateTileType(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		Board::cycleTileType();
+		break;
+	/*case natakto:
+		Board::setCurrentTileType(TileType::X);
+		break;*/
+	default:
+	case endOfList:
+		Board::cycleTileType();
+		break;	
+	}
+}
