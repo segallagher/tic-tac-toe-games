@@ -31,7 +31,7 @@ Board::~Board()
 
 void Board::evaluateBoard()
 {
-	auto result = score(GameMode::nRow, getBoardTilesAsTileType());
+	auto result = score(_ruleset, getBoardTilesAsTileType());
 	
 	if (result.first) {
 		setParentTileState(result.second);
