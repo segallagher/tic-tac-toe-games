@@ -24,10 +24,7 @@ bool TicTacToeGame::OnUserCreate()
 	// Called once at the start, so create things here
 	loadSprites();
 
-	ultimateBoardSetup();
-	//regularBoardSetup();
 	buttonSetup();
-
 	return true;
 }
 bool TicTacToeGame::OnUserUpdate(float fElapsedTime)
