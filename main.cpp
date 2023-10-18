@@ -11,6 +11,10 @@
 
 int main(int argc, char** argv)
 {
+#ifndef DEBUG
+	FreeConsole(); // Removes the console when starting with the executable
+#endif // !DEBUG
+
 	int dtresult = 0;
 #ifdef DEBUG
 	// Doctest Testing

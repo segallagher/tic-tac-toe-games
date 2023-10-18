@@ -42,8 +42,11 @@ public:
 	// Displays game win
 	void drawGameWinner();
 
-	// Displays GameRules
-	void drawGameRulesText();
+	// Displays text
+	void drawPopup();
+	// Sets the text for the popup
+	void setPopup(std::string title, std::string text);
+
 	// Gets the current gamemode's rules text
 	std::string getGameRulesText();
 
@@ -126,7 +129,9 @@ public:
 	std::vector<std::unique_ptr<BoardButton>> _boardButtons = std::vector<std::unique_ptr<BoardButton>>();
 	
 	// Used by rule display buttons
-	bool _drawRules = false;
+	bool _drawPopup = false;
+	std::string _popupTitle;
+	std::string _popupText;
 	Button* _resetGameButtonPtr;
 
 	// Will only hold the game result that _board will give it
@@ -134,17 +139,16 @@ public:
 	Board _board;
 
 	// Options
+	bool _isUltimateBoard = true;
 	int _optionsBoardSize = 3;
-	int _boardSizeMin = 1;
+	int _boardSizeMin = 3;
 	int _boardSizeMax = 20;
 
-	// Temporay!
+	// Temporay! <- definately speled right
 	std::string _nRowGameRulesText =
-		"Get 3 of your tiles in\n"
-		"a row to win a small\n"
-		"board and get 3 big\n"
-		"tiles in a row to win\n"
-		"the big board!";
+		"Get n (max of 5) of\n"
+		"your tiles in a row\n"
+		"to win a board.";
 
 	// ######################
 	// Sprites
