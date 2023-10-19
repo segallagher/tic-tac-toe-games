@@ -209,7 +209,6 @@ void Board::setParentTileState(TileType state)
 void Board::setRuleset(GameMode ruleset)
 {
 	_ruleset = ruleset;
-	initializeTileType(ruleset);
 	for (auto& y : _board)
 	{
 		for (auto& x : y)

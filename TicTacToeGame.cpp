@@ -42,12 +42,15 @@ bool TicTacToeGame::OnUserUpdate(float fElapsedTime)
 
 void TicTacToeGame::startGame()
 {
+	_boardParentTile.setState(TileType::Empty);
+	_board.setParentTile(&_boardParentTile);
+
 	if (_isUltimateBoard)
 		ultimateBoardSetup({ 3, 3 }, { _optionsBoardSize, _optionsBoardSize });
 	else
 		regularBoardSetup({ _optionsBoardSize, _optionsBoardSize });
 
-	Board::setCurrentTileType(TileType::O);
+	initializeTileType(_board.getRuleset());
 	Board::setCurrentTurn(0);
 	setMenu(ButtonSet::Gameplay);
 }
@@ -92,7 +95,7 @@ void TicTacToeGame::drawGameWinner()
 	// Draw
 	DrawDecal(backGroundPosition, _blankXOTile.Decal(), backgroundDecalScale, olc::GREY);
 	DrawDecal(winnerTilePosition, decalPtr, winnerDecalScale);
-	DrawStringDecal(backGroundPosition + titleOffset, "WINNER", olc::DARK_GREY, { 1.25f, 1.25f });
+	DrawStringDecal(backGroundPosition + titleOffset, gameCompleteTitleString(_board.getRuleset()), olc::DARK_GREY, {1.25f, 1.25f});
 }
 void TicTacToeGame::drawPopup()
 {
@@ -141,8 +144,6 @@ void TicTacToeGame::loadSprites()
 
 void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions, olc::v2d_generic<int> smallBoardDimensions)
 {
-	_boardParentTile.setState(TileType::Empty);
-	_board.setParentTile(&_boardParentTile);
 	_board.setBoardDimensions(bigBoardDimensions);
 	for (size_t y = 0; y < _board.getBoardDimensions().y; y++)
 	{
@@ -152,12 +153,11 @@ void TicTacToeGame::ultimateBoardSetup(olc::v2d_generic<int> bigBoardDimensions,
 			_board.getUnderlyingBoard()[y][x].setChildBoard(smallBoard);
 		}
 	}
+	_board.setRuleset(_board.getRuleset());
 	boardButtonSetup();
 }
 void TicTacToeGame::regularBoardSetup(olc::v2d_generic<int> boardDimensions)
 {
-	_boardParentTile.setState(TileType::Empty);
-	_board.setParentTile(&_boardParentTile);
 	_board.setBoardDimensions(boardDimensions);
 	boardButtonSetup();
 }
@@ -671,12 +671,12 @@ void TicTacToeGame::drawOptionsMenuDetails()
 {
 	// Options title
 	{
-		olc::vi2d rectSize = { 120, 25 };
+		olc::vi2d rectSize = { 95, 25 };
 		olc::vi2d pos = { (GetScreenSize().x - rectSize.x) / 2, 5 };
 		olc::vi2d boarder = { 1, 1 };
 		FillRect(pos, rectSize, olc::GREY);
 		FillRect(pos + boarder, rectSize - (boarder * 2));
-		DrawStringDecal(pos + olc::vi2d(boarder.x * 2, 5), "Options", olc::DARK_GREY, { 1.5f, 1.5f * 1.5f });
+		DrawStringDecal(pos + olc::vi2d(boarder.x * 2 + 4, 5), "Options", olc::DARK_GREY, { 1.5f, 1.5f * 1.5f });
 	}
 
 	olc::vi2d positionOfOption = { 40, 45 };
@@ -755,7 +755,7 @@ void TicTacToeGame::drawOptionsMenuDetails()
 
 		// Gamemode / Ruleset value
 		{
-			olc::vi2d rectSize = { 80, 20 };
+			olc::vi2d rectSize = { 100, 20 };
 			olc::vi2d pos = { positionAfterArrows.x + spacing, positionAfterArrows.y + gamemodeStringOffset * 2 };
 			FillRect(pos, rectSize, olc::GREY);
 			FillRect(pos + boarder, rectSize - (boarder * 2));
@@ -777,12 +777,12 @@ void TicTacToeGame::nextGameMode()
 {
 	auto currentRuleset = _board.getRuleset();
 	currentRuleset = static_cast<GameMode>(static_cast<int>(currentRuleset) + 1);
-	if(GameMode::endOfList) // Wrap around
+	if(currentRuleset == GameMode::endOfList) // Wrap around
 		currentRuleset = static_cast<GameMode>(0);
 
 	_board.setRuleset(currentRuleset);
 #ifdef DEBUG
-	std::cout << "[DEBUG]: Ruleset set to " << currentRuleset << std::endl;
+	std::cout << "[DEBUG]: Ruleset set to " << getGamemodeAsString(currentRuleset) << ": via next" << std::endl;
 #endif // DEBUG
 }
 void TicTacToeGame::previousGameMode()
@@ -795,6 +795,6 @@ void TicTacToeGame::previousGameMode()
 
 	_board.setRuleset(currentRuleset);
 #ifdef DEBUG
-	std::cout << "[DEBUG]: Ruleset set to " << currentRuleset << std::endl;
+	std::cout << "[DEBUG]: Ruleset set to " << getGamemodeAsString(currentRuleset) << ": via previous" << std::endl;
 #endif // DEBUG
 }

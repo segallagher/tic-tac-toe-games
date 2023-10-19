@@ -65,4 +65,7 @@ void updateTileType(GameMode gamemode);
 // Sets the tile to be what it should be for the given gamemode
 void initializeTileType(GameMode gamemode);
 
+// Returns text for the on game win/lose display
+std::string gameCompleteTitleString(GameMode gamemode);
+
 #endif // !RULES_HPP

@@ -136,12 +136,26 @@ void initializeTileType(GameMode gamemode)
 	case nRow:
 		Board::setCurrentTileType(TileType::O);
 		break;
-		/*case natakto:
-			Board::setCurrentTileType(TileType::X);
-			break;*/
+	case notakto:
+		Board::setCurrentTileType(TileType::X);
+		break;
 	default:
 	case endOfList:
 		Board::setCurrentTileType(TileType::O);
 		break;
+	}
+}
+
+std::string gameCompleteTitleString(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		return "WINNER!";
+	case notakto:
+		return "P" + std::to_string(((Board::getCurrentTurn() + 1) % 2) + 1) + " WINS!";
+	default:
+	case endOfList:
+		return "WINNER!";
 	}
 }
