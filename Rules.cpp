@@ -20,7 +20,7 @@ std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::v
 	case GameMode::notakto:
 	{
 		// set target length to lesser of x,y dimensions
-		int length = std::min(board.size(), board.at(0).size());
+		int length = std::min((int)board.size(), (int)board.at(0).size());
 		if (length > 5) {
 			length = 5;
 		}
@@ -83,6 +83,8 @@ std::string getGamemodeAsString(GameMode gamemode)
 	{
 	case nRow:
 		return "nRow";
+	case notakto:
+		return "notakto";
 	case endOfList:
 		return "endOfList";
 	default:
@@ -99,6 +101,11 @@ std::string getGameRulesText(GameMode gamemode)
 			"Get n (max of 5) of\n"
 			"your tiles in a row\n"
 			"to win a board.";
+	case notakto:
+		return
+			"Both players place x\n"
+			"avoid being the one\n"
+			"to make n in a row";
 	default:
 	case endOfList:
 		return "Ruleset error: change gamemode";
@@ -112,9 +119,9 @@ void updateTileType(GameMode gamemode)
 	case nRow:
 		Board::cycleTileType();
 		break;
-	/*case natakto:
+	case notakto:
 		Board::setCurrentTileType(TileType::X);
-		break;*/
+		break;
 	default:
 	case endOfList:
 		Board::cycleTileType();
