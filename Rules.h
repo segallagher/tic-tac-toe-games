@@ -60,4 +60,7 @@ std::string getGameRulesText(GameMode gamemode);
 // Updates the current placeable tile to what it needs to be next
 void updateTileType(GameMode gamemode);
 
+// Sets the tile to be what it should be for the given gamemode
+void initializeTileType(GameMode gamemode);
+
 #endif // !RULES_HPP
