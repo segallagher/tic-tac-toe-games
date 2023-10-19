@@ -104,3 +104,20 @@ void updateTileType(GameMode gamemode)
 		break;	
 	}
 }
+
+void initializeTileType(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		Board::setCurrentTileType(TileType::O);
+		break;
+		/*case natakto:
+			Board::setCurrentTileType(TileType::X);
+			break;*/
+	default:
+	case endOfList:
+		Board::setCurrentTileType(TileType::O);
+		break;
+	}
+}
