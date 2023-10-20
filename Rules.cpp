@@ -153,7 +153,7 @@ std::string gameCompleteTitleString(GameMode gamemode)
 	case nRow:
 		return "WINNER!";
 	case notakto:
-		return "P" + std::to_string(((Board::getCurrentTurn() + 1) % 2) + 1) + " WINS!";
+		return "P" + std::to_string((Board::getCurrentTurn() % 2) + 1) + " WINS!";
 	default:
 	case endOfList:
 		return "WINNER!";

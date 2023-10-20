@@ -191,6 +191,7 @@ TEST_CASE("Underlying Board Get/Set")
 
 TEST_CASE("Board Turns")
 {
+	Board::setCurrentTurn(0);
 	CHECK(Board::getCurrentTurn() == 0);
 
 	Board::setCurrentTurn(5);
