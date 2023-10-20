@@ -6,6 +6,7 @@
 #include <vector>
 #include "TicTacToeGame.h"
 #include <iostream>
+#include <algorithm>
 
 #ifndef RULES_HPP
 #define RULES_HPP
@@ -13,6 +14,7 @@
 enum GameMode
 {
 	nRow,
+	notakto,
 	endOfList // needed for gamemode changing
 };
 
@@ -62,5 +64,8 @@ void updateTileType(GameMode gamemode);
 
 // Sets the tile to be what it should be for the given gamemode
 void initializeTileType(GameMode gamemode);
+
+// Returns text for the on game win/lose display
+std::string gameCompleteTitleString(GameMode gamemode);
 
 #endif // !RULES_HPP

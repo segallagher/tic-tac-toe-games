@@ -6,12 +6,29 @@
 #include "Rules.h"
 
 std::pair<bool, TileType> score(const GameMode ruleset, const std::vector<std::vector<TileType>> & board) {
-	if (ruleset == GameMode::nRow) {
-		int length = board.size();
+	switch (ruleset) {
+	case GameMode::nRow:
+	{
+		// set target length to lesser of x,y dimensions
+		int length = std::min((int)board.size(), (int)board.at(0).size());
 		if (length > 5) {
 			length = 5;
 		}
-		return _nRow(board, length);	// HARDCODED VALUE ALERT, find a way to pass n in
+		return _nRow(board, length);
+		break;
+	}
+	case GameMode::notakto:
+	{
+		// set target length to lesser of x,y dimensions
+		int length = std::min((int)board.size(), (int)board.at(0).size());
+		if (length > 5) {
+			length = 5;
+		}
+		return _nRow(board, length);
+		break;
+	}
+	default:
+		break;
 	}
 
 }
@@ -66,6 +83,8 @@ std::string getGamemodeAsString(GameMode gamemode)
 	{
 	case nRow:
 		return "nRow";
+	case notakto:
+		return "notakto";
 	case endOfList:
 		return "endOfList";
 	default:
@@ -82,6 +101,11 @@ std::string getGameRulesText(GameMode gamemode)
 			"Get n (max of 5) of\n"
 			"your tiles in a row\n"
 			"to win a board.";
+	case notakto:
+		return
+			"Both players place x\n"
+			"avoid being the one\n"
+			"to make n in a row";
 	default:
 	case endOfList:
 		return "Ruleset error: change gamemode";
@@ -95,9 +119,9 @@ void updateTileType(GameMode gamemode)
 	case nRow:
 		Board::cycleTileType();
 		break;
-	/*case natakto:
+	case notakto:
 		Board::setCurrentTileType(TileType::X);
-		break;*/
+		break;
 	default:
 	case endOfList:
 		Board::cycleTileType();
@@ -112,12 +136,26 @@ void initializeTileType(GameMode gamemode)
 	case nRow:
 		Board::setCurrentTileType(TileType::O);
 		break;
-		/*case natakto:
-			Board::setCurrentTileType(TileType::X);
-			break;*/
+	case notakto:
+		Board::setCurrentTileType(TileType::X);
+		break;
 	default:
 	case endOfList:
 		Board::setCurrentTileType(TileType::O);
 		break;
+	}
+}
+
+std::string gameCompleteTitleString(GameMode gamemode)
+{
+	switch (gamemode)
+	{
+	case nRow:
+		return "WINNER!";
+	case notakto:
+		return "P" + std::to_string(((Board::getCurrentTurn() + 1) % 2) + 1) + " WINS!";
+	default:
+	case endOfList:
+		return "WINNER!";
 	}
 }
