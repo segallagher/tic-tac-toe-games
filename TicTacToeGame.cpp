@@ -53,6 +53,7 @@ void TicTacToeGame::startGame()
 	initializeTileType(_board.getRuleset());
 	Board::setCurrentTurn(0);
 	setMenu(ButtonSet::Gameplay);
+	_board.setActive(true);
 }
 
 void TicTacToeGame::drawing()
